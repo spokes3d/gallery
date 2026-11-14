@@ -14,8 +14,8 @@ The magnetic field is radial, $B_r(r)$ with 30 mT at $R_0$, and a uniform axial 
 $E_z = -3$ kV/m (the cathode presheath) drives the Hall drift $E_z/B_r = 10^5$ m/s. The
 azimuthal field of a spoke gives an axial drift $E_\\theta \\times B_r$: there the electrons
 cross the magnetic field towards the anode ($+z$) and gain $e|E_z|\\,\\Delta z$. The electrons
-are stored in an mpiparticles `ParticleStore`, pushed with the Boris scheme
-($\\Delta t = 10^{-10}$ s, $\\omega_{ce}\\Delta t = 0.53$) and collide with argon at 0.5 Pa
+are stored in an mpiparticles `ParticleStore`, pushed with its compiled Boris scheme
+(`boris_push`; $\\Delta t = 10^{-10}$ s, $\\omega_{ce}\\Delta t = 0.53$) and collide with argon at 0.5 Pa
 (plasmacoll's Monte Carlo collisions: elastic, one lumped excitation at 11.5 eV, Lotz
 ionization from the 3p shell). Electrons that reach the anode plane $z = +5$ mm are absorbed
 and counted as the cross-field current, the cathode sheath at $z = -5$ mm reflects them, and the
@@ -148,20 +148,6 @@ def sample_electrons(background, rng, count, t):
     return positions, velocities
 
 
-def boris(positions, velocities, e, b, dt):
-    """One Boris step of electrons, in place."""
-    from plasmacoll.constants import ELECTRON_MASS
-
-    q_m = -QE / ELECTRON_MASS
-    v_minus = velocities + 0.5 * dt * q_m * e
-    t_vec = 0.5 * dt * q_m * b
-    s_vec = 2 * t_vec / (1 + np.sum(t_vec * t_vec, axis=0))
-    v_prime = v_minus + np.cross(v_minus.T, t_vec.T).T
-    v_plus = v_minus + np.cross(v_prime.T, s_vec.T).T
-    velocities[:] = v_plus + 0.5 * dt * q_m * e
-    positions += dt * velocities
-
-
 def collisions():
     """Electron-argon Monte Carlo collisions with stand-in cross sections."""
     from plasmacoll import (
@@ -223,7 +209,7 @@ def spoke_angle(x, y, t):
 
 def run(preset: str) -> dict:
     """Push and collide the electrons; return the per-frame data and the period averages."""
-    from mpiparticles import ParticleStore
+    from mpiparticles import ParticleStore, boris_push
     from plasmacoll.constants import ELECTRON_MASS
 
     size = PRESETS[preset]
@@ -246,7 +232,8 @@ def run(preset: str) -> dict:
         recording = step >= n_burn
         n = store.length
         p, v, alive = store.positions[:, :n], store.velocities[:, :n], store.alive[:n]
-        boris(p, v, e_field(background, p, t + 0.5 * DT), b_field(p[0], p[1]), DT)
+        e = e_field(background, p, t + 0.5 * DT)
+        boris_push(store, e, b_field(p[0], p[1]), DT, -QE / ELECTRON_MASS)
         t += DT
 
         # the cathode sheath reflects; the anode plane and the domain edge absorb
@@ -489,10 +476,11 @@ def plot(result: dict):
     axis_cm = result["axis"] * 100
     snapshots = result["snapshots"]
     t0 = result["times"][0]
+    # the ionization at four instants, two by two (the potential and the electrons are in the
+    # animation): small enough panels to read on a phone, one colorbar
     fig, axes = plt.subplots(
-        2, len(snapshots), figsize=(3.2 * len(snapshots), 6.6), constrained_layout=True
+        2, 2, figsize=(6.4, 6.4), sharex=True, sharey=True, constrained_layout=True
     )
-    axes = np.asarray(axes).reshape(2, -1)
     ion_max = (
         max(
             np.percentile(gaussian_filter(s["ion"].astype(float), 1.2), 99.7)
@@ -500,23 +488,9 @@ def plot(result: dict):
         )
         or 1.0
     )
-    for top, bottom, snap in zip(axes[0], axes[1], snapshots, strict=True):
+    for ax, snap in zip(axes.ravel(), snapshots, strict=True):
         phi = potential_lab(result, snap["t"])
-        image = top.imshow(
-            phi.T, origin="lower", extent=extent, cmap="cividis", vmin=-12, vmax=12
-        )
-        dots = top.scatter(
-            snap["x"] * 100,
-            snap["y"] * 100,
-            c=snap["energy"],
-            s=0.6,
-            cmap="plasma",
-            vmin=0,
-            vmax=30,
-            lw=0,
-        )
-        top.set_title(f"t = {(snap['t'] - t0) * 1e6:.2f} µs")
-        ionization = bottom.imshow(
+        ionization = ax.imshow(
             gaussian_filter(snap["ion"].astype(float), 1.2).T,
             origin="lower",
             extent=extent,
@@ -524,19 +498,18 @@ def plot(result: dict):
             vmin=0,
             vmax=ion_max,
         )
-        bottom.contour(
+        ax.contour(
             axis_cm, axis_cm, phi.T, levels=[0, 6], colors="#66ccff", linewidths=0.6
         )
-        for ax in (top, bottom):
-            ax.set_aspect("equal")
-            ax.set_xlim(-4.5, 4.5)
-            ax.set_ylim(-4.5, 4.5)
-            ax.set_xlabel("x [cm]")
-        top.set_ylabel("y [cm]")
-        bottom.set_ylabel("y [cm]")
-    fig.colorbar(image, ax=axes[0], label="potential [V]", shrink=0.8)
-    fig.colorbar(dots, ax=axes[0], label="electron energy [eV]", shrink=0.8)
-    fig.colorbar(ionization, ax=axes[1], label="ionization events [arb.]", shrink=0.8)
+        ax.set_title(f"t = {(snap['t'] - t0) * 1e6:.2f} µs")
+        ax.set_aspect("equal")
+        ax.set_xlim(-4.5, 4.5)
+        ax.set_ylim(-4.5, 4.5)
+    for ax in axes[1]:
+        ax.set_xlabel("x [cm]")
+    for ax in axes[:, 0]:
+        ax.set_ylabel("y [cm]")
+    fig.colorbar(ionization, ax=axes, label="ionization events [arb.]", shrink=0.8)
 
     fig, ax = plt.subplots(figsize=(5.6, 4.8), constrained_layout=True)
     image = ax.imshow(
