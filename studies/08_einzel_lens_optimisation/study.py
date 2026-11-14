@@ -1,4 +1,4 @@
-"""Design optimisation of an einzel lens: a brute-force scan and the optimiser's path.
+"""Einzel lens optimisation.
 
 A check of beamtracer's design optimisation (`beamtracer.optimization`) on the einzel lens of
 `beamtracer.optimization.einzel`, before it designs extraction grids: three coaxial tubes, the

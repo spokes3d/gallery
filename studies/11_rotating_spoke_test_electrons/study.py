@@ -1,4 +1,4 @@
-"""Test electrons in a prescribed rotating spoke.
+"""Rotating-spoke test electrons.
 
 What do electrons do in a spoke that is given, not computed? The background is made up: a
 2D slice parallel to a circular target at the height of the racetrack ($R_0 = 3$ cm), built

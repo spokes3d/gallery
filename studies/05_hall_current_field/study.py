@@ -1,4 +1,4 @@
-"""How much does the electron Hall current change the magnetic field of a magnetron?
+"""Hall current field.
 
 In a magnetron the electrons drift around the racetrack on E×B and the ions do not, so the
 plasma carries an azimuthal current. Hecimovic and von Keudell (J. Phys. D 51, 453001, 2018)

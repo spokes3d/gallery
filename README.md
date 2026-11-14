@@ -6,9 +6,9 @@ Site: <https://spokes3d.github.io/gallery/>
 
 | Study | Kind | Codes |
 |---|---|---|
-| [How much does the electron Hall current change the magnetic field of a magnetron?](https://spokes3d.github.io/gallery/studies/hall-current-field/) | example | none |
-| [Design optimisation of an einzel lens: a brute-force scan and the optimiser's path](https://spokes3d.github.io/gallery/studies/einzel-lens-optimisation/) | verification | beamtracer, plasma-plots |
-| [Test electrons in a prescribed rotating spoke](https://spokes3d.github.io/gallery/studies/rotating-spoke-test-electrons/) | example | byob, mpifield, mpiparticles, plasmacoll |
+| [Hall current field](https://spokes3d.github.io/gallery/studies/hall-current-field/) | example | none |
+| [Einzel lens optimisation](https://spokes3d.github.io/gallery/studies/einzel-lens-optimisation/) | verification | beamtracer, plasma-plots |
+| [Rotating-spoke test electrons](https://spokes3d.github.io/gallery/studies/rotating-spoke-test-electrons/) | example | byob, mpifield, mpiparticles, plasmacoll |
 
 ## Running a study
 
