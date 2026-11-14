@@ -1,0 +1,24 @@
+---
+title: SPOKES3D gallery
+description: Studies of magnetron discharges and the codes behind them, from the SPOKES3D project.
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+Spokes are ionization zones that rotate along the racetrack of a magnetron, mostly seen in
+high-power impulse magnetron sputtering (HiPIMS). SPOKES3D, a Marie Skłodowska-Curie fellowship
+at LPGP (CNRS / Université Paris-Saclay), simulates them in 3D with particle-in-cell codes.
+
+This gallery holds the project's public studies: the verification of the codes, demonstrations
+of the methods and examples. Each study is a complete, standalone script with its result
+cached, and its status box says what it verifies and what it does not. Studies with new results
+join the gallery when their preprint is out.
+
+<CardGrid>
+	<LinkCard title="Studies" href="/gallery/studies/" description="The scripts, their results and their status." />
+	<LinkCard title="Verification" href="/gallery/by-kind/verification/" description="The codes against analytic results, benchmarks and each other." />
+	<LinkCard title="Examples" href="/gallery/by-kind/example/" description="Uses of the codes and estimates." />
+</CardGrid>
+
+The codes are the max-models packages ([github.com/max-models](https://github.com/max-models)),
+and the site is built with [gallery-tools](https://github.com/spokes3d/gallery-template).

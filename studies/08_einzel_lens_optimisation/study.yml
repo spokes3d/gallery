@@ -1,0 +1,36 @@
+# Read by gallery-tools without running the script (see the Adding a study guide).
+category: Design optimisation
+kind: verification
+public: true
+codes:
+- beamtracer
+- plasma-plots
+ladder: outside the ladder (beam optics)
+questions: []
+summary: >-
+  Beamtracer's design optimisation on an einzel lens: differential evolution finds the minimum of
+  a brute-force voltage scan, its path in a three-parameter search with a surface-field limit, and
+  the optimum moving with space charge.
+docs_preset: full
+runtime: about 4 to 5 minutes on 4 processes
+status: >-
+  A verification of the optimisation loop, not of the lens: the optimiser reaches the minimum of the
+  brute-force scan in one parameter; with space charge the scans and the searches agree; the three-parameter
+  search is short (about 380 solves) and has not settled the gap, and the surface field on the 0.5
+  mm mesh is about 10 % low.
+figures:
+- >-
+  One parameter: the rms spot at the target against the middle voltage, the brute-force scan (line)
+  and the optimiser's evaluations coloured by the generation that asked for them, with the thin-lens
+  and paraxial voltages; right, near the minimum on a linear scale.
+- >-
+  The optimiser's path in one parameter: the voltage of the best design after each generation, from
+  the initial population (generation 0), against the scan's minimum (band: one scan step either side),
+  and the best spot so far against the number of evaluations.
+- >-
+  Three parameters with the surface field limited to 5 MV/m: every evaluation projected on the voltage-gap
+  and voltage-bore planes (filled: within the limit, open: above it), and the best design after each
+  generation joined in order, from the circle (the initial population, generation 0) to the star.
+- >-
+  Space charge: scans of the spot against the voltage at 0, 1 and 3 mA, the optimiser's optimum of
+  each (stars) and the thin-lens voltage without space charge.

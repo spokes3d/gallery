@@ -1,0 +1,24 @@
+# Read by gallery-tools without running the script (see the Adding a study guide).
+category: Estimates
+kind: example
+public: true
+codes: []
+ladder: 1a
+questions:
+- Q1
+summary: >-
+  An estimate of the field of the electron Hall current against the magnet's, from the Hall parameter
+  and from the momentum balance.
+docs_preset: full
+runtime: about 10 seconds
+status: >-
+  An order-of-magnitude estimate, not a model and not a verification. The torus geometry is assumed,
+  the Hall current is the review's ratio, and nothing is compared with a measured field. The two estimates
+  bracket a range of about 0.2 to 20 mT for HiPIMS conditions.
+figures:
+- >-
+  Field of the Hall current at the top of the torus against the discharge current, for Hall parameters
+  2, 5 and 16, with the 50 to 100 mT range of the magnet.
+- >-
+  Momentum-balance estimate of the field of the Hall current as a fraction of a 50 mT magnet field,
+  against the plasma density and the electric field.
