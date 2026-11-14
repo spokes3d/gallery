@@ -1,9 +1,8 @@
 {
   "source": "spokes3d/gallery-private",
-  "commit": "8808e2db4bdd6216094c80e0b186bba6c90882e4",
+  "commit": "015c6285596c2ddba07599819978f04818f7f94a",
   "studies": [
     "05_hall_current_field",
-    "08_einzel_lens_optimisation",
     "11_rotating_spoke_test_electrons"
   ]
 }

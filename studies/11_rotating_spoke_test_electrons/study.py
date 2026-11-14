@@ -22,8 +22,10 @@ and counted as the cross-field current, the cathode sheath at $z = -5$ mm reflec
 population is topped up from the background's density. After a burn-in of 0.4 periods the run
 records one period of the pattern ($2\\pi/(3\\Omega) = 6.3\\,\\mu$s).
 
+The first figure plays the recorded period: the spokes rotate in the lab frame, a third of a
+turn per period, and carry the electrons with them.
 `python studies/11_rotating_spoke_test_electrons/study.py --movie spoke.mp4` also writes a movie of
-the period (needs ffmpeg).
+every frame (needs ffmpeg).
 
 Compared: nothing; this is a demonstration of the codes on a made-up background. Not compared:
 any measurement. The background is not self-consistent (no Poisson equation, the electrons do
@@ -72,6 +74,8 @@ COLLIDE_EVERY = 5
 N_SHOW = 3000  # markers kept per frame for the figures
 N_BINS = 180  # azimuthal bins
 SNAPSHOTS = 4
+MOVIE_FRAMES = 30  # frames of the animation over the recorded period
+MOVIE_MARKERS = 600  # markers per frame of the animation
 
 
 def spoke_shape(theta):
@@ -347,8 +351,23 @@ def compact(full: dict) -> dict:
         snapshots.append(
             {**frames[i], "ion": np.mean([f["ion"] for f in around], axis=0)}
         )
+    # the ionization maps relative to their common maximum (arbitrary units), in half precision
+    peak = max(float(s["ion"].max()) for s in snapshots) or 1.0
+    for snapshot in snapshots:
+        snapshot["ion"] = (snapshot["ion"] / peak).astype(np.float16)
     keep = {k: v for k, v in full.items() if k != "frames"}
     keep["snapshots"] = snapshots
+    # the animation: a few dozen frames over the period, a few hundred markers each
+    movie = np.linspace(0, len(frames), min(MOVIE_FRAMES, len(frames)), endpoint=False)
+    keep["movie"] = [
+        {
+            "t": frames[i]["t"],
+            "x": frames[i]["x"][:MOVIE_MARKERS].astype(np.float16),
+            "y": frames[i]["y"][:MOVIE_MARKERS].astype(np.float16),
+            "energy": frames[i]["energy"][:MOVIE_MARKERS].astype(np.float16),
+        }
+        for i in movie.astype(int)
+    ]
     keep["times"] = np.array([f["t"] for f in frames])
     keep["ion_rate"] = np.array([f["ions"] for f in frames]) / full["frame_time"]
     keep["anode_rate"] = np.array([f["anode"] for f in frames]) / full["frame_time"]
@@ -412,10 +431,60 @@ def potential_probe(result: dict):
     return interp(np.stack([R0 * np.cos(-OMEGA * t), R0 * np.sin(-OMEGA * t)], axis=-1))
 
 
-def plot(result: dict) -> None:
-    """Draw the snapshots, the spoke-frame ionization map, the profiles and the time signals."""
+def animate(result: dict):
+    """The rotating spokes over the recorded period: the lab-frame potential and the electrons."""
+    from matplotlib.animation import FuncAnimation
+
+    movie = result["movie"]
+    t0 = result["times"][0]
+    extent = (-L * 100, L * 100, -L * 100, L * 100)
+    fig, ax = plt.subplots(figsize=(6.4, 5.2), constrained_layout=True)
+    image = ax.imshow(
+        potential_lab(result, movie[0]["t"])[::2, ::2].T,
+        origin="lower",
+        extent=extent,
+        cmap="cividis",
+        vmin=-12,
+        vmax=12,
+    )
+    dots = ax.scatter(
+        movie[0]["x"].astype(float) * 100,
+        movie[0]["y"].astype(float) * 100,
+        c=movie[0]["energy"].astype(float),
+        s=4,
+        cmap="plasma",
+        vmin=0,
+        vmax=30,
+        lw=0,
+    )
+    fig.colorbar(image, ax=ax, label="potential [V]", shrink=0.85)
+    fig.colorbar(dots, ax=ax, label="electron energy [eV]", shrink=0.85)
+    ax.set_aspect("equal")
+    ax.set_xlim(-4.5, 4.5)
+    ax.set_ylim(-4.5, 4.5)
+    ax.set_xlabel("x [cm]")
+    ax.set_ylabel("y [cm]")
+
+    def update(i):
+        frame = movie[i]
+        image.set_data(potential_lab(result, frame["t"])[::2, ::2].T)
+        dots.set_offsets(
+            np.c_[frame["x"].astype(float), frame["y"].astype(float)] * 100
+        )
+        dots.set_array(frame["energy"].astype(float))
+        return image, dots
+
+    animation = FuncAnimation(fig, update, frames=len(movie), interval=120)
+    # the slider of the web figure shows the time
+    animation._plasma_sweep = ("t [µs]", [(f["t"] - t0) * 1e6 for f in movie])
+    return animation
+
+
+def plot(result: dict):
+    """Draw the animation and the figures of the period; return the animation."""
     from scipy.ndimage import gaussian_filter
 
+    animation = animate(result)
     extent = (-L * 100, L * 100, -L * 100, L * 100)
     axis_cm = result["axis"] * 100
     snapshots = result["snapshots"]
@@ -425,7 +494,10 @@ def plot(result: dict) -> None:
     )
     axes = np.asarray(axes).reshape(2, -1)
     ion_max = (
-        max(np.percentile(gaussian_filter(s["ion"], 1.2), 99.7) for s in snapshots)
+        max(
+            np.percentile(gaussian_filter(s["ion"].astype(float), 1.2), 99.7)
+            for s in snapshots
+        )
         or 1.0
     )
     for top, bottom, snap in zip(axes[0], axes[1], snapshots, strict=True):
@@ -445,7 +517,7 @@ def plot(result: dict) -> None:
         )
         top.set_title(f"t = {(snap['t'] - t0) * 1e6:.2f} µs")
         ionization = bottom.imshow(
-            gaussian_filter(snap["ion"], 1.2).T,
+            gaussian_filter(snap["ion"].astype(float), 1.2).T,
             origin="lower",
             extent=extent,
             cmap="magma",
@@ -517,6 +589,7 @@ def plot(result: dict) -> None:
     lines = ax.get_lines() + probe_axis.get_lines()
     ax.legend(lines, [line.get_label() for line in lines], fontsize=8, loc="upper left")
     ax.grid(True, alpha=0.3)
+    return animation
 
 
 def table(result: dict) -> str:
@@ -621,5 +694,5 @@ if __name__ == "__main__":
         movie(full, args.movie)
     outcome = compact(full)
     print(table(outcome))
-    plot(outcome)
+    animation = plot(outcome)  # an animation plays while it is referenced
     plt.show()

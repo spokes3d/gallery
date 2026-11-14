@@ -25,6 +25,11 @@ status: >-
   it.
 figures:
 - >-
+  The rotating spokes over one period of the pattern in the lab frame (press Play, or drag the
+  slider): the plasma potential, three spokes on the racetrack moving clockwise at 10 km/s, and
+  600 of the test electrons coloured by kinetic energy. The pattern turns by a third of a turn
+  per period, so the last frame looks like the first one.
+- >-
   Four instants of the period in the lab frame. Top: the plasma potential with the test electrons
   coloured by kinetic energy. Bottom: the ionization events of the electrons around that instant,
   with the 0 V and 6 V contours of the potential.

@@ -7,7 +7,6 @@ Site: <https://spokes3d.github.io/gallery/>
 | Study | Kind | Codes |
 |---|---|---|
 | [Hall current field](https://spokes3d.github.io/gallery/studies/hall-current-field/) | example | none |
-| [Einzel lens optimisation](https://spokes3d.github.io/gallery/studies/einzel-lens-optimisation/) | verification | beamtracer, plasma-plots |
 | [Rotating-spoke test electrons](https://spokes3d.github.io/gallery/studies/rotating-spoke-test-electrons/) | example | byob, mpifield, mpiparticles, plasmacoll |
 
 ## Running a study

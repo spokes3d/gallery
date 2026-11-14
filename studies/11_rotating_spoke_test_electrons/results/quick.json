@@ -1,35 +1,52 @@
 {
   "preset": "quick",
-  "wall_seconds": 160.9,
-  "ran_at": "2026-11-13T11:32:35+00:00",
+  "wall_seconds": 176.1,
+  "ran_at": "2026-11-14T16:04:57+00:00",
   "python": "3.13.18",
   "codes": {
+    "beamtracer": {
+      "version": "0.1.0",
+      "commit": "442f8955bf"
+    },
     "byob": {
       "version": "0.1.0",
-      "commit": "b348683"
-    },
-    "plasmacoll": {
-      "version": "0.5.0",
-      "commit": "528dd45"
-    },
-    "plasma-plots": {
-      "version": "0.2.5",
-      "commit": "5f832b0"
+      "commit": "b348683e45"
     },
     "cunumpy": {
       "version": "0.7.2",
-      "commit": "159a712"
+      "commit": "159a7128ba"
+    },
+    "freeofcharge": {
+      "version": "0.1.0",
+      "commit": "a3d2deb53c"
     },
     "mpifield": {
       "version": "0.1.0",
-      "commit": "6b63310"
+      "commit": "6b633102ff"
     },
     "mpiparticles": {
       "version": "0.1.0",
-      "commit": "3094b67"
+      "commit": "3094b674dd"
+    },
+    "picnic": {
+      "version": "0.1",
+      "commit": "54a7cafc36"
+    },
+    "plasma-plots": {
+      "version": "0.2.5",
+      "commit": "5f832b09ea"
+    },
+    "plasmacoll": {
+      "version": "0.5.0",
+      "commit": "528dd45539"
     },
     "simgeometry": {
-      "version": "0.2.1"
+      "version": "0.2.1",
+      "commit": "5ac67477bc"
+    },
+    "wellbalanced": {
+      "version": "0.1.0",
+      "commit": "e303b7b465"
     }
   }
 }
