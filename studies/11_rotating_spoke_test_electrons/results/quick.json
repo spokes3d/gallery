@@ -1,0 +1,35 @@
+{
+  "preset": "quick",
+  "wall_seconds": 160.9,
+  "ran_at": "2026-11-13T11:32:35+00:00",
+  "python": "3.13.18",
+  "codes": {
+    "byob": {
+      "version": "0.1.0",
+      "commit": "b348683"
+    },
+    "plasmacoll": {
+      "version": "0.5.0",
+      "commit": "528dd45"
+    },
+    "plasma-plots": {
+      "version": "0.2.5",
+      "commit": "5f832b0"
+    },
+    "cunumpy": {
+      "version": "0.7.2",
+      "commit": "159a712"
+    },
+    "mpifield": {
+      "version": "0.1.0",
+      "commit": "6b63310"
+    },
+    "mpiparticles": {
+      "version": "0.1.0",
+      "commit": "3094b67"
+    },
+    "simgeometry": {
+      "version": "0.2.1"
+    }
+  }
+}

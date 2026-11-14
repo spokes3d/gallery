@@ -1,0 +1,40 @@
+# Read by gallery-tools without running the script (see the Adding a study guide).
+category: Test particles
+kind: example
+public: true
+codes:
+- byob
+- mpifield
+- mpiparticles
+- plasmacoll
+ladder: outside the ladder (test particles in a prescribed spoke)
+questions:
+- Q6
+- Q7
+summary: >-
+  Test electrons, Boris-pushed through a made-up rotating three-spoke background with argon collisions:
+  where they cross the field and ionize.
+docs_preset: quick
+runtime: about 3 minutes (quick); seconds (smoke)
+status: >-
+  A demonstration, not a model and not a verification. The background is prescribed and made up (shape,
+  amplitudes and speed chosen by hand), the electrons do not act back on it and the cross sections
+  are rough stand-ins. With 10 000 markers the azimuthal profiles are averaged over a whole period
+  and are smooth; the time signals are still noisy. What it shows qualitatively: the cross-field flux
+  to the anode is concentrated at the leading edge of each spoke, and the ionization is enhanced behind
+  it.
+figures:
+- >-
+  Four instants of the period in the lab frame. Top: the plasma potential with the test electrons
+  coloured by kinetic energy. Bottom: the ionization events of the electrons around that instant,
+  with the 0 V and 6 V contours of the potential.
+- >-
+  The ionization events of the whole period in the spoke frame, with the potential contours: the ionization
+  zone of each spoke.
+- >-
+  Azimuthal profiles at the racetrack in the spoke frame, averaged over the period and normalized:
+  the potential, the mean electron energy, the ionization rate and the cross-field electron flux to
+  the anode. The spokes move towards negative angles.
+- >-
+  Global signals against time: the total ionization rate and the cross-field current (relative to
+  their means), and the potential a probe fixed at (R0, 0) sees.

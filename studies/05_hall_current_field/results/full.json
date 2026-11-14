@@ -1,0 +1,32 @@
+{
+  "preset": "full",
+  "wall_seconds": 0.1,
+  "ran_at": "2026-10-15T08:33:27+00:00",
+  "python": "3.13.5",
+  "codes": {
+    "picnic": {
+      "version": "0.1",
+      "commit": "d6c3e5b+dirty"
+    },
+    "wellbalanced": {
+      "version": "0.1.0",
+      "commit": "3f90472+dirty"
+    },
+    "plasmacoll": {
+      "version": "0.1.0",
+      "commit": "a3b9ed8"
+    },
+    "plasma-plots": {
+      "version": "0.2.1",
+      "commit": "18c5d98"
+    },
+    "cunumpy": {
+      "version": "0.6.3",
+      "commit": "40825b1e72"
+    },
+    "simgeometry": {
+      "version": "0.1.0",
+      "commit": "9e5cfc5+dirty"
+    }
+  }
+}

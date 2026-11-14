@@ -1,3 +1,21 @@
 # SPOKES3D gallery
 
-The public studies of the SPOKES3D project, generated from its private gallery.
+Studies of magnetron discharges and the codes behind them, from the SPOKES3D project: verification of the codes, method demonstrations and examples.
+
+Site: <https://spokes3d.github.io/gallery/>
+
+| Study | Kind | Codes |
+|---|---|---|
+| [How much does the electron Hall current change the magnetic field of a magnetron?](https://spokes3d.github.io/gallery/studies/hall-current-field/) | example | none |
+| [Design optimisation of an einzel lens: a brute-force scan and the optimiser's path](https://spokes3d.github.io/gallery/studies/einzel-lens-optimisation/) | verification | beamtracer, plasma-plots |
+| [Test electrons in a prescribed rotating spoke](https://spokes3d.github.io/gallery/studies/rotating-spoke-test-electrons/) | example | byob, mpifield, mpiparticles, plasmacoll |
+
+## Running a study
+
+```bash
+uv sync
+uv run python studies/<study>/study.py --preset smoke
+uv run gallery build --cached-only   # the pages of the site, from the cached results
+```
+
+This repository is generated from a private gallery with `gallery export` ([gallery-template](https://github.com/spokes3d/gallery-template)): changes come in as pull requests from the sync and are not made here by hand.

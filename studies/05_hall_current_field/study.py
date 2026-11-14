@@ -1,0 +1,165 @@
+"""How much does the electron Hall current change the magnetic field of a magnetron?
+
+In a magnetron the electrons drift around the racetrack on E×B and the ions do not, so the
+plasma carries an azimuthal current. Hecimovic and von Keudell (J. Phys. D 51, 453001, 2018)
+report that this Hall current is of the order of the Hall parameter times the discharge current
+and that it modifies the static field during a HiPIMS pulse. The question for the programme is
+whether the models can keep a fixed $B(x)$: if the field of the Hall current is a few per cent
+of the magnet's, they can; if it is a quarter, the field needs a feedback.
+
+Two independent estimates. First the field of the Hall current $I_H = \\mathrm{Ha}\\,I_D$ flowing
+in a torus (racetrack radius, height and minor radius below), summed from current filaments
+with the exact field of a circular loop (Biot–Savart, elliptic integrals); it is the
+perturbation of the component along the magnet's field, at the top and bottom of the torus.
+Second the momentum balance $\\delta B = \\mu_0 n e E L / B$ for a current density $n e E / B$
+over a layer of thickness $L$, which needs the density and the electric field instead of the
+current.
+
+Compared: the two estimates against each other, and against a magnet field of 50 to 100 mT at
+the racetrack (the range typical of the planar magnetrons in the review; not a measured field of
+a particular magnet). Not compared: a measured Hall current. The geometry (torus 16 mm radius,
+5 mm above the target, 5 mm minor radius) is an assumption, the Hall parameters 2, 5 and 16 are
+the review's HiPIMS and DC values, and the direction of the effect on the confinement
+(whether the field is pushed out above the racetrack or in) is not determined here, only its
+size.
+
+Reference: Hecimovic and von Keudell, J. Phys. D 51 (2018) 453001 (Hall parameter, Hall current
+and discharge current).
+"""
+
+import argparse
+
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.special import ellipe, ellipk
+
+PRESETS = {
+    "smoke": {"filaments": 6, "currents": 4, "grid": 5},
+    "quick": {"filaments": 16, "currents": 12, "grid": 25},
+    "full": {"filaments": 28, "currents": 20, "grid": 60},
+}
+
+MU0 = 4.0e-7 * np.pi
+ELEMENTARY_CHARGE = 1.602176634e-19
+#: Assumed geometry of the current torus [m]: racetrack radius, height, minor radius.
+RACETRACK_RADIUS, HEIGHT, MINOR_RADIUS = 0.016, 0.005, 0.005
+
+
+def ring_radial_field(current, radius, height, r, z):
+    """Radial field [T] at (r, z) of a circular loop of ``radius`` at ``height``."""
+    dz = z - height
+    a2 = (radius + r) ** 2 + dz**2
+    m = 4.0 * radius * r / a2
+    k, e = ellipk(m), ellipe(m)
+    return (
+        MU0
+        * current
+        / (2.0 * np.pi)
+        * dz
+        / (r * np.sqrt(a2))
+        * (-k + (radius**2 + r**2 + dz**2) / ((radius - r) ** 2 + dz**2) * e)
+    )
+
+
+def torus_radial_field(current, r, z, filaments):
+    """Radial field [T] at (r, z) of a uniform-current torus, summed from filaments."""
+    offsets = np.linspace(-MINOR_RADIUS, MINOR_RADIUS, filaments)
+    points = [
+        (x, y) for x in offsets for y in offsets if x * x + y * y <= MINOR_RADIUS**2
+    ]
+    return sum(
+        ring_radial_field(current / len(points), RACETRACK_RADIUS + x, HEIGHT + y, r, z)
+        for x, y in points
+    )
+
+
+def simulate(preset: str = "quick") -> dict:
+    """Field of the Hall current against the discharge current and against n and E."""
+    size = PRESETS[preset]
+    currents = np.geomspace(0.1, 100.0, size["currents"])
+    hall_parameters = (2.0, 5.0, 16.0)
+    # evaluated slightly outside the torus so that no filament sits on the field point
+    top = HEIGHT + 1.2 * MINOR_RADIUS
+    field = np.array(
+        [
+            [
+                torus_radial_field(ha * i_d, RACETRACK_RADIUS, top, size["filaments"])
+                * 1e3
+                for i_d in currents
+            ]
+            for ha in hall_parameters
+        ]
+    )
+    densities = np.geomspace(1e17, 1e20, size["grid"])
+    electric_fields = np.geomspace(1e2, 1e5, size["grid"])
+    magnet = 0.05
+    layer = 5e-3
+    balance = (
+        MU0
+        * densities[:, None]
+        * ELEMENTARY_CHARGE
+        * electric_fields[None, :]
+        * layer
+        / magnet**2
+    )
+    return {
+        "currents": currents,
+        "hall_parameters": np.array(hall_parameters),
+        "field_mt": field,
+        "densities": densities,
+        "electric_fields": electric_fields,
+        "balance_fraction": balance,
+    }
+
+
+def plot(result: dict) -> None:
+    """Draw the two figures of the study."""
+    fig, ax = plt.subplots(figsize=(6, 4), constrained_layout=True)
+    for ha, series in zip(result["hall_parameters"], result["field_mt"], strict=True):
+        ax.plot(
+            result["currents"], np.abs(series), marker="o", ms=3, label=f"Ha = {ha:g}"
+        )
+    ax.axhspan(50, 100, color="0.85", label="magnet, 50 to 100 mT")
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlabel("discharge current [A]")
+    ax.set_ylabel("field of the Hall current, top of the torus [mT]")
+    ax.legend()
+    ax.grid(True, alpha=0.3, which="both")
+
+    fig, ax = plt.subplots(figsize=(6, 4.5), constrained_layout=True)
+    image = ax.pcolormesh(
+        result["electric_fields"],
+        result["densities"],
+        np.log10(result["balance_fraction"]),
+        shading="auto",
+    )
+    contours = ax.contour(
+        result["electric_fields"],
+        result["densities"],
+        result["balance_fraction"],
+        levels=[0.01, 0.1, 0.5],
+        colors="white",
+    )
+    ax.clabel(contours, fmt=lambda v: f"{100 * v:g}%")
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlabel("electric field E [V/m]")
+    ax.set_ylabel("plasma density n [m$^{-3}$]")
+    fig.colorbar(image, label="log10 of the field of the Hall current over 50 mT")
+
+    index = {float(ha): i for i, ha in enumerate(result["hall_parameters"])}
+    for i_d in (10.0, 70.0):
+        j = int(np.argmin(np.abs(result["currents"] - i_d)))
+        print(
+            f"I_D = {result['currents'][j]:.0f} A, Ha = 5: field of the Hall current "
+            f"{abs(result['field_mt'][index[5.0], j]):.1f} mT at the top of the torus"
+        )
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--preset", choices=sorted(PRESETS), default="quick")
+    args = parser.parse_args()
+    plot(simulate(args.preset))
+    plt.show()
