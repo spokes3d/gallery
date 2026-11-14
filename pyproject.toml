@@ -11,18 +11,19 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
   "gallery-tools @ git+https://github.com/spokes3d/gallery-template@devel",
-  "beamtracer",
   "byob",
   "matplotlib",
   "mpifield",
   "mpiparticles",
   "numpy",
-  "plasma-plots",
   "plasmacoll",
   "scipy",
-  "xarray",
 ]
-optional-dependencies.docs = [ "ipykernel" ]
+optional-dependencies.docs = [
+  "ipykernel",
+  "kaleido",
+  "plasma-plots[web]",
+]
 optional-dependencies.test = [ "pytest" ]
 
 [tool.setuptools]
@@ -33,7 +34,6 @@ ini_options.testpaths = [ "tests" ]
 ini_options.addopts = "-ra"
 
 [tool.uv.sources]
-beamtracer = { git = "https://github.com/max-models/beamtracer", branch = "devel" }
 byob = { git = "https://github.com/max-models/byob", branch = "devel" }
 mpifield = { git = "https://github.com/max-models/mpifield", branch = "devel" }
 mpiparticles = { git = "https://github.com/max-models/mpiparticles", branch = "devel" }
