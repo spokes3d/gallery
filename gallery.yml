@@ -23,8 +23,6 @@ private_codes:
 fields:
   ladder:
     label: Ladder rung
-    link: /programme/
-    link_text: programme
   questions:
     label: Research questions
     default: verification
