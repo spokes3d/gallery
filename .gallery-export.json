@@ -1,8 +1,10 @@
 {
   "source": "spokes3d/gallery-private",
-  "commit": "06eb467a70d37bd5824a2f116c6e274f765dd622",
+  "commit": "c4db568588ed15575ac56e1b0691fa01790a2ce1",
   "studies": [
     "05_hall_current_field",
-    "11_rotating_spoke_test_electrons"
+    "11_rotating_spoke_test_electrons",
+    "13_rotating_spoke_test_ions",
+    "15_pic_cost_hipims"
   ]
 }
