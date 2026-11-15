@@ -1,37 +1,23 @@
 """Rotating-spoke test electrons.
 
-What do electrons do in a spoke that is given, not computed? The background is made up: a
-2D slice parallel to a circular target at the height of the racetrack ($R_0 = 3$ cm), built
-with byob in the frame that rotates with the spokes. A radial potential well of 25 V keeps the
-electrons on the racetrack; on it sit three spokes, each a 12 V potential hump with a sharp
-leading edge and a long tail, with a hotter electron temperature (3 eV outside, up to 7 eV
-inside) and the density from Boltzmann's relation. In the lab frame the pattern rotates rigidly
-at 10 km/s in the direction of the electron Hall drift, so the field at an electron is gathered
-(mpifield's compiled kernels, through byob) at its position rotated back into the spoke frame,
-and the result is rotated forward again.
+What do electrons do in a spoke that is given, not computed? The background, built with byob,
+is a 2D slice parallel to a circular target at the height of the racetrack ($R_0 = 3$ cm), in
+the frame that rotates with the spokes. A 25 V radial potential well keeps the electrons on the
+racetrack; on it sit three spokes, 12 V potential humps with a sharp leading edge and a long
+tail, with hotter electrons inside (3 eV outside, up to 7 eV). The pattern rotates rigidly at
+10 km/s in the direction of the electron Hall drift.
 
-The magnetic field is radial, $B_r(r)$ with 30 mT at $R_0$, and a uniform axial field
-$E_z = -3$ kV/m (the cathode presheath) drives the Hall drift $E_z/B_r = 10^5$ m/s. The
-azimuthal field of a spoke gives an axial drift $E_\\theta \\times B_r$: there the electrons
-cross the magnetic field towards the anode ($+z$) and gain $e|E_z|\\,\\Delta z$. The electrons
-are stored in an mpiparticles `ParticleStore`, pushed with its compiled Boris scheme
-(`boris_push`; $\\Delta t = 10^{-10}$ s, $\\omega_{ce}\\Delta t = 0.53$) and collide with argon at 0.5 Pa
-(plasmacoll's Monte Carlo collisions: elastic, one lumped excitation at 11.5 eV, Lotz
-ionization from the 3p shell). Electrons that reach the anode plane $z = +5$ mm are absorbed
-and counted as the cross-field current, the cathode sheath at $z = -5$ mm reflects them, and the
-population is topped up from the background's density. After a burn-in of 0.4 periods the run
-records one period of the pattern ($2\\pi/(3\\Omega) = 6.3\\,\\mu$s).
+The magnetic field is radial, 30 mT at $R_0$, and a uniform axial field $E_z = -3$ kV/m drives
+the Hall drift. The azimuthal field of a spoke adds an axial drift $E_\\theta \\times B_r$, so
+there the electrons cross the magnetic field towards the anode. The electrons are Boris-pushed
+(mpiparticles) through the field gathered by byob and collide with argon at 0.5 Pa (plasmacoll's
+Monte Carlo collisions: elastic, excitation, ionization). Those that reach the anode plane are
+counted as the cross-field current. The run records one period of the pattern (6.3 µs).
 
-The first figure plays the recorded period: the spokes rotate in the lab frame, a third of a
-turn per period, and carry the electrons with them.
-`python studies/11_rotating_spoke_test_electrons/study.py --movie spoke.mp4` also writes a movie of
-every frame (needs ffmpeg).
+`python studies/11_rotating_spoke_test_electrons/study.py --movie spoke.mp4` also writes a movie
+(needs ffmpeg).
 
-Compared: nothing; this is a demonstration of the codes on a made-up background. Not compared:
-any measurement. The background is not self-consistent (no Poisson equation, the electrons do
-not change it), the cross sections are rough stand-ins (constant elastic, a made-up excitation,
-Lotz ionization), the slab has no axial structure apart from $E_z$, and the secondary electrons
-of ionization start at a random height, since the collisions see only $(x, y)$.
+Compared: nothing; this is a demonstration of the codes on a made-up background.
 
 Reference: the picture of spokes as rotating ionization zones with a potential hump, a
 leading-edge field and enhanced cross-field transport, e.g. Hecimovic and von Keudell,

@@ -8,40 +8,29 @@ codes:
 ladder: outside the ladder (basics)
 questions: []
 summary: >-
-  The length, time and transport scales of DC and HiPIMS magnetron plasmas in argon against density,
-  field, pressure and electron temperature: Debye length, plasma and gyrofrequencies, gyroradii, collision
-  frequencies and mean free paths, Hall parameters, and classical against Bohm diffusion.
+  The length, time and transport scales of DC and HiPIMS magnetron plasmas in argon against
+  density, field, pressure and electron temperature.
 docs_preset: full
 runtime: under a second
 status: >-
-  Textbook estimates, not a model and not a verification. The two cases (0.5 Pa, 30 mT, 3 eV,
-  10^16 and 10^19 m^-3) are typical values chosen here, not measurements, and the gap (15 mm) and
-  racetrack width (10 mm) are assumed. The Ar+ + Ar momentum-transfer cross section is Phelps' (1994)
-  fit from plasmacoll, evaluated at an assumed ion temperature of 0.1 eV; the electron-argon
-  momentum-transfer cross section is a constant stand-in of 1e-19 m^2, since plasmacoll ships no
-  electron-argon set (they come from LXCat), so the electron collision frequencies, mean free paths and
-  Hall parameters are good to a factor of about two and miss the energy dependence (Ramsauer minimum).
-  Maxwellian mean speeds are used for the collision frequencies, the gas is at 300 K, and the classical
-  diffusion uses the collisions with the gas only; the Coulomb collisions enter only the frequency figure
-  and one row of the table.
+  Textbook estimates, not a model or a verification; the two cases (0.5 Pa, 30 mT, 3 eV, 10^16 and
+  10^19 m^-3) and the geometry are assumed. The electron-argon cross section is a constant 1e-19
+  m^2 (plasmacoll has no electron set), so the electron collision quantities are good to a factor
+  of about two.
 figures:
 - >-
-  Length scales against the plasma density for the DC field, pressure and temperature (30 mT, 0.5 Pa,
-  3 eV): the Debye length for T_e = 1, 3 and 10 eV, the thermal gyroradii of the electrons and of
-  0.1 eV argon ions, the electron and ion mean free paths in the gas, and the assumed gap (15 mm) and
-  racetrack width (10 mm).
+  Length scales against the density at 30 mT, 0.5 Pa and 3 eV: the Debye length (T_e = 1, 3 and 10
+  eV), electron and ion gyroradii, mean free paths in the gas, and the assumed gap and racetrack
+  width.
 - >-
-  Frequencies against the plasma density at 30 mT, 0.5 Pa and 3 eV: electron and ion plasma
-  frequencies and the electron-ion Coulomb collision frequency, which grow with the density, against the
-  gyrofrequencies and the collision frequencies with the gas, which do not depend on it.
+  Frequencies against the density at 30 mT, 0.5 Pa and 3 eV: plasma, gyro- and collision
+  frequencies, including the electron-ion Coulomb collisions.
 - >-
-  Frequencies against the magnetic field at 3 eV: electron and ion gyrofrequencies, the electron- and
-  ion-neutral collision frequencies at 0.1, 0.5 and 5 Pa, and the electron plasma frequency at 10^15
-  and 10^19 m^-3.
+  Frequencies against the magnetic field at 3 eV: gyrofrequencies, collision frequencies with the
+  gas at 0.1, 0.5 and 5 Pa, and the electron plasma frequency at 10^15 and 10^19 m^-3.
 - >-
-  Electron Hall parameter (gyrofrequency over the electron-neutral collision frequency) over the
-  magnetic field and the argon pressure, at 3 eV, with contours from 10 to 3000; the dot is the typical
-  DC case. Coulomb collisions are left out, so at HiPIMS densities the values are several times lower.
+  Electron Hall parameter over the magnetic field and the argon pressure at 3 eV, without Coulomb
+  collisions; the dot is the typical DC case.
 - >-
-  Electron cross-field diffusion coefficient against the magnetic field at 3 eV: Bohm's T_e/(16 e B)
-  against the classical value with the collisions with the gas at 0.1, 0.5 and 5 Pa.
+  Electron cross-field diffusion coefficient against the magnetic field at 3 eV: Bohm's T_e/(16 e
+  B) and the classical value at 0.1, 0.5 and 5 Pa.

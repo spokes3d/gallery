@@ -1,45 +1,24 @@
 """Rotating-spoke test ions.
 
-Where do the argon ions go that the electrons make in a spoke, and with what energy do they
-reach the target? The background is the made-up one of the rotating-spoke test electrons, unchanged:
-a 2D slice parallel to a circular target at the height of the racetrack ($R_0 = 3$ cm), built
-with byob in the frame that rotates with the spokes, with a radial potential well of 25 V on
-which sit three spokes, 12 V potential humps with a sharp leading edge and a long tail, a
-hotter electron temperature inside them (3 eV outside, up to 7 eV) and the density from
-Boltzmann's relation. The pattern rotates rigidly at 10 km/s in the direction of the electron
-Hall drift; the magnetic field is radial, 30 mT at $R_0$, and a uniform axial field
-$E_z = -3$ kV/m (the cathode presheath) points towards the target.
+Where do the argon ions made in a spoke go, and with what energy do they reach the target? The
+background is that of the rotating-spoke test electrons, unchanged: a 2D slice above the
+racetrack ($R_0 = 3$ cm) with a 25 V radial well and three 12 V potential humps rotating at
+10 km/s, a radial magnetic field of 30 mT and a uniform axial presheath field
+$E_z = -3$ kV/m towards the target.
 
-Ar$^+$ test ions are born where the electrons ionize. Instead of the electrons' ionization
-events, the birth distribution is the background's ionization rate $n_e\\,k_{iz}(T_e)$ in the
-spoke frame, with $k_{iz}$ the Maxwellian rate coefficient (plasmacoll's `rate_coefficient`) of
-the same Lotz 3p cross section the electrons use; it peaks just behind the leading edge of a
-spoke, where the hot electrons are. The height of birth is uniform between the cathode sheath
-edge $z = -5$ mm and the anode plane $z = +5$ mm, and the ions start with the thermal speed of
-the gas (300 K), each at a random time of the pattern's period, rotated into the lab frame.
-They are pushed in the lab frame with mpiparticles' compiled Boris scheme
-($\\Delta t = 10$ ns; at 30 mT the ions are practically unmagnetized, $\\omega_{ci}\\Delta t
-= 7\\cdot10^{-4}$), through the rotating field gathered by byob, and collide with argon at
-0.5 Pa through plasmacoll's Monte Carlo collisions with Phelps' Ar$^+$ + Ar cross sections:
-isotropic elastic scattering and backscattering, which is the resonant charge exchange (the
-ion leaves with the velocity of a gas atom). An ion is followed until it reaches the cathode
-sheath edge ($z = -5$ mm, recorded as reaching the target: its energy, its angle to the normal
-and its azimuth relative to the spokes), the anode plane (towards the substrate) or the outer
-edge of the slice ($r = 4.75$ cm).
+Ar$^+$ test ions are born with the background's ionization rate $n_e\\,k_{iz}(T_e)$, which peaks
+just behind the leading edge of each spoke, at a random height between the cathode sheath edge
+and the anode plane. They are Boris-pushed (mpiparticles) through the rotating field gathered by
+byob and collide with argon at 0.5 Pa (plasmacoll's Monte Carlo
+collisions with Phelps' cross sections, including resonant charge exchange). Each ion is
+followed until it reaches the cathode sheath edge (the target), the anode plane or the outer
+edge.
 
-The energies are those at the sheath edge. The cathode sheath adds the sheath voltage (a few
-hundred volts in a magnetron) to every ion that crosses it without a collision and turns it
-towards the normal; what is shown is the spread the presheath and the spokes give on top of it.
-The axial presheath alone gives at most $e|E_z|\\cdot 10\\,$mm $= 30$ eV, so an ion above 30 eV
-has gained energy from the in-plane field of the well and the spokes.
+The energies are those at the sheath edge; the sheath voltage adds to all of them. The
+presheath alone gives at most 30 eV, so an ion above 30 eV has gained energy from the in-plane
+field of the well and the spokes.
 
-The last figure plays one period of the pattern in the lab frame, with a few hundred ions.
-
-Compared: nothing; this is a demonstration of the codes on a made-up background. Not compared:
-any measurement. The background is not self-consistent and the ions do not act back on it;
-the slab has no axial structure apart from $E_z$ (no sheath, the in-plane field is the same at
-every height); the birth distribution is the background's ionization rate, not that of the
-pushed test electrons; and there are no sputtered metal ions.
+Compared: nothing; this is a demonstration of the codes on a made-up background.
 
 Reference: the picture of spokes as rotating ionization zones with a potential hump, e.g.
 Hecimovic and von Keudell, J. Phys. D 51 (2018) 453001; the Ar$^+$ + Ar cross sections of

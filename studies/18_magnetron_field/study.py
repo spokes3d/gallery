@@ -1,40 +1,25 @@
 """Magnetron magnetic field.
 
-The magnetic field of a circular planar magnetron with a 2-inch (50.8 mm) target. Below the
-target sit two permanent magnets, magnetized along the axis in opposite directions: a
-cylinder in the centre (north up) and a ring at the edge (south up). A uniformly magnetized
-magnet has the field of a current sheet on its side faces, $K_\\varphi = M = B_\\mathrm{rem}/\\mu_0$,
-so the centre cylinder is one current sheet and the ring two, with opposite currents on its
-inner and outer faces. Each sheet is a stack of circular loops (Gauss–Legendre nodes over
-the height of the magnet), and each loop has the exact field of a current loop (Biot–Savart,
-complete elliptic integrals $K$ and $E$). The field is axisymmetric, so its field lines are
-the contours of the flux function $\\psi = r A_\\varphi$, with $B_r = -\\partial_z \\psi / r$ and
-$B_z = \\partial_r \\psi / r$.
+The magnetic field of a circular planar magnetron with a 2-inch (50.8 mm) target. Two
+permanent magnets below the target, magnetized along the axis in opposite directions (a
+cylinder in the centre, a ring at the edge), are modelled as current sheets on their side
+faces, each a stack of circular loops with the exact field of a loop (elliptic integrals).
+The field lines are the contours of the flux function $\\psi = r A_\\varphi$.
 
-The field lines leave the target above the centre magnet and return to it above the ring:
-they form an arch. Where $B_z = 0$ on the target the field is parallel to it; the electrons
-are trapped there (by the arch and the cathode sheath) and drift around the axis, which is
-where the target erodes, the racetrack. Two magnet sets are compared. In the *balanced* one
-the two magnets carry the same flux (equal pole areas), and nearly all field lines close on
-the target. In the *unbalanced* one (type II) the centre magnet is smaller, the ring carries
-2.2 times its flux, the excess flux of the ring leaves towards the substrate, and the axis
-has a null of the field above the target, with a separatrix between the closed and the open
-field lines.
+The field lines arch from the centre pole to the ring. Where $B_z = 0$ on the target the field
+is parallel to it: the electrons are trapped there and drift around the axis, and the target
+erodes along this racetrack. Along a field line the field rises towards both feet, a magnetic
+mirror that is strong on the inner side and weak on the outer one. Two magnet sets are
+compared: a *balanced* one, whose field lines nearly all close on the target, and an
+*unbalanced* one (type II), whose ring carries 2.2 times the flux of the centre, so that field
+lines escape towards the substrate past a null of the field on the axis.
 
-Assumed (typical of a 2-inch magnetron, not a particular one): NdFeB magnets with
-$B_\\mathrm{rem} = 1.2$ T, 8 mm high, their top faces 8 mm below the target surface (target,
-backing plate and cooling water); the centre cylinder 12 mm in radius (balanced) or 8 mm
-(unbalanced), the ring from 20 to 23.3 mm. No iron yoke, no other magnetic material: the
-yoke under real magnets strengthens the field above the target, so the numbers are
-indicative only. The field line used for the mirror ratio is the one whose apex is 2 mm
-above the target, where the electrons of a discharge are concentrated. Its mirror ratio is the
-field at a foot on the target over the minimum along the line; the minimum is not at the apex
-but towards the ring, so the arch is a strong mirror on the inside and a weak one on the
-outside (without a yoke, the narrow ring gives a weaker field than the centre pole).
+Assumed, typical of a 2-inch magnetron: NdFeB magnets with $B_\\mathrm{rem} = 1.2$ T, 8 mm high
+and 8 mm below the target surface; a centre cylinder 12 mm (balanced) or 8 mm (unbalanced) in
+radius and a ring from 20 to 23.3 mm; no iron yoke.
 
-Compared: the field-line tracing against the flux function ($\\psi$ is constant along the
-traced lines to round-off, printed), and the two magnet sets with each other. Not
-compared: a measured field of a real magnetron.
+Compared: the traced field lines against the flux function, and the two magnet sets with each
+other.
 
 Reference: the planar magnetron, its racetrack and the balanced and unbalanced
 configurations as in Lieberman and Lichtenberg, *Principles of Plasma Discharges and
@@ -444,7 +429,7 @@ def table(result: dict) -> str:
                 lambda d: f"{mm * d['min_field']:.0f} mT",
             ),
             row(
-                "mirror ratio of that field line (B at the foot / minimum), inner / outer foot",
+                "mirror ratio of that line (foot / minimum), inner / outer",
                 lambda d: f"{d['mirror_inner']:.2f} / {d['mirror_outer']:.2f}",
             ),
             row(

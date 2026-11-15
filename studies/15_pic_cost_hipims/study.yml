@@ -6,15 +6,12 @@ codes: []
 ladder: '2'
 questions: []
 summary: >-
-  What an explicit PIC run of a magnetron costs against the plasma density, the field at the
-  cathode and the domain: cells, time steps, markers and core-hours or GPU-hours, from DC to
-  HiPIMS density.
+  The cost of an explicit PIC run of a magnetron against the plasma density, the field at the
+  cathode and the domain, from DC to HiPIMS density.
 docs_preset: full
 runtime: about a second
 status: >-
-  An estimate, not a measurement. The resolution rules (cell size the smaller of the Debye
-  length and the electron gyroradius, omega_pe dt at most 0.2, omega_ce dt at most 0.4) give
-  cell sizes and time steps within a factor of 1.6 of those the two published 2D cases chose.
-  The markers per cell (100 per species) and the cost of a marker step (100 ns on a CPU core,
-  2 ns on a GPU) are assumptions until benchmarks measure them; the field solve, load imbalance,
-  implicit or energy-conserving schemes and mesh refinement are not considered.
+  An estimate, not a measurement. The rules give cell sizes and time steps within a factor of 1.6
+  of those the two published 2D cases chose. The markers per cell and the cost of a marker step
+  are assumptions; the field solve, load imbalance, implicit schemes and mesh refinement are not
+  considered.

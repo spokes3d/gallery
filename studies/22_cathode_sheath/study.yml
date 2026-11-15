@@ -6,48 +6,31 @@ codes: [byob, plasmacoll]
 ladder: outside the ladder (basics)
 questions: []
 summary: >-
-  Textbook estimates of the cathode sheath of a DC magnetron: the collisionless and collisional
-  Child laws for the sheath thickness, the energy of the ions at the target with charge exchange
-  in the sheath, and Thornton's minimum voltage from the secondary electron yield.
+  Textbook estimates of the cathode sheath of a DC magnetron: its thickness, the energy of the
+  ions at the target, and Thornton's minimum voltage.
 docs_preset: full
 runtime: a few seconds
 status: >-
-  Estimates from textbook formulas, not a model of a discharge and not compared with
-  measurements. Checked: byob's Child–Langmuir width equals the closed-form law to rounding.
-  Assumed: a planar one-dimensional sheath with a given voltage (400 V) and ion current density;
-  the collisionless law, or the variable-mobility collisional law where it gives the thinner
-  sheath (ion mean free path below about 0.3 of the thickness); Phelps' Ar+–Ar cross sections
-  at one centre-of-mass energy (50 eV), argon at 300 K, no gas heating; a charge exchange
-  leaves the ion at rest and the potential keeps its collisionless or collisional profile;
-  no ionisation in the sheath, no fast neutrals, no magnetic field on the ions. The yield γ,
-  the energy per ion pair W₀ and the efficiencies of Thornton's condition are parameters, not
-  computed. At 0.5 to 2 Pa the sheath (about 0.8 mm at 100 A/m²) is much thinner than the
-  charge exchange mean free path (6 to 23 mm), so nearly all ions reach the target with the full
-  sheath voltage; and with γ ≈ 0.1 and W₀ = 30 eV Thornton's condition gives 300 V when every
-  ion and all the electron energy are used, the low end of the voltages of DC magnetrons.
+  Textbook estimates, not a model of a discharge and not compared with measurements; byob's
+  Child–Langmuir width equals the closed form to rounding. Assumed: a planar 1D sheath with a
+  given voltage and current, cross sections at one energy (50 eV), and no ionisation, fast
+  neutrals or magnetic field in the sheath; γ, W₀ and the efficiencies are parameters.
 figures:
 - >-
-  Sheath thickness against the sheath voltage for ion current densities of 10, 100 and 1000
-  A/m² (1 to 100 mA/cm²): the collisionless Child–Langmuir law (solid, byob's sheath_width) and
-  the sheath at 100 Pa of argon (dashed), where the collisional law gives the thinner sheath
-  except at the highest current density.
+  Sheath thickness against the sheath voltage for ion current densities of 10, 100 and 1000 A/m²:
+  the collisionless Child–Langmuir law (solid) and the sheath at 100 Pa of argon (dashed).
 - >-
-  Lengths against the argon pressure at 400 V and 100 A/m²: the thickness from the
-  collisionless and the collisional Child laws, the thinner one that the study uses, and the
-  total and charge exchange mean free paths of Ar+ in argon (Phelps' cross sections at 50 eV,
-  300 K). The collisional law takes over where the mean free path falls below about a third of
-  the thickness, near 45 Pa.
+  Lengths against the argon pressure at 400 V and 100 A/m²: the collisionless and collisional
+  sheath thicknesses, the thinner one used, and the total and charge exchange mean free paths of
+  Ar+.
 - >-
-  Energy distribution of the ions that charge-exchanged in the sheath, at the target, for 400 V
-  and 100 A/m² at 0.5, 2, 5 and 20 Pa; the legend gives the fraction that crosses without
-  charge exchange and arrives with the full 400 eV (not drawn).
+  Energy distribution at the target of the ions that charge-exchanged in the sheath, at 400 V and
+  100 A/m² for 0.5, 2, 5 and 20 Pa; the legend gives the fraction arriving with the full 400 eV
+  (not drawn).
 - >-
-  Mean ion energy at the target (top) and the fraction of ions that cross the sheath without
-  charge exchange (bottom) against the argon pressure at 400 V, for ion current densities of
-  10, 100 and 1000 A/m². The small step in the mean energy is where the study switches from the
-  collisionless to the collisional sheath and potential profile.
+  Mean ion energy at the target (top) and fraction of ions crossing without charge exchange
+  (bottom) against the argon pressure at 400 V, for 10, 100 and 1000 A/m²; the small step is the
+  switch to the collisional sheath.
 - >-
-  Thornton's minimum voltage V_min = W₀/(γ ε_i ε_e) against the secondary electron yield γ, for
-  an energy per ion pair over the efficiencies, W₀/(ε_i ε_e), of 30, 60, 120 and 240 eV (W₀ = 30
-  or 60 eV with ε_i ε_e = 1, 0.5 or 0.25), with the 300 and 600 V bounds of DC magnetrons (grey
-  lines).
+  Thornton's minimum voltage against the secondary electron yield γ for W₀/(ε_i ε_e) = 30, 60, 120
+  and 240 eV, with the 300 and 600 V bounds of DC magnetrons (grey).

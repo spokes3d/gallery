@@ -7,14 +7,14 @@ ladder: 1a
 questions:
 - Q1
 summary: >-
-  An estimate of the field of the electron Hall current against the magnet's, from the Hall parameter
-  and from the momentum balance.
+  An estimate of the field of the electron Hall current against the magnet's, from the Hall
+  parameter and from the momentum balance.
 docs_preset: full
 runtime: about 10 seconds
 status: >-
-  An order-of-magnitude estimate, not a model and not a verification. The torus geometry is assumed,
-  the Hall current is the review's ratio, and nothing is compared with a measured field. The two estimates
-  bracket a range of about 0.2 to 20 mT for HiPIMS conditions.
+  An order-of-magnitude estimate, not a model and not a verification. The torus geometry is
+  assumed, and only the size of the effect is estimated, not whether it pushes the field out or in
+  above the racetrack. The two estimates bracket about 0.2 to 20 mT for HiPIMS conditions.
 figures:
 - >-
   Field of the Hall current at the top of the torus against the discharge current, for Hall parameters

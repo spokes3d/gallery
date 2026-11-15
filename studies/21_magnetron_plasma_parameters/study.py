@@ -1,49 +1,23 @@
 """Magnetron plasma parameters.
 
-The length, time and transport scales that set the physics of DC and HiPIMS magnetrons in
-argon, over the ranges these discharges cover: plasma density $n$ from $10^{15}$ to
-$10^{19}$ m$^{-3}$, magnetic field $B$ from 10 to 100 mT, pressure $p$ from 0.1 to 5 Pa and
-electron temperature $T_e$ from 1 to 10 eV. They are textbook formulas, evaluated with the
-plasma-parameter functions of plasma-plots (`plasma_plots.theory`) and the constants and
-argon data of plasmacoll:
+The length, time and transport scales of DC and HiPIMS magnetrons in argon, over densities of
+$10^{15}$ to $10^{19}$ m$^{-3}$, fields of 10 to 100 mT, pressures of 0.1 to 5 Pa and electron
+temperatures of 1 to 10 eV. They are textbook formulas, evaluated with `plasma_plots.theory`
+and the argon data of plasmacoll: the Debye length, plasma and gyrofrequencies, thermal
+gyroradii, collision frequencies and mean free paths in the gas, the Coulomb collision
+frequency, Hall parameters, and the classical and Bohm cross-field diffusion coefficients. The
+table gives them for a typical DC and a typical HiPIMS case.
 
-- the Debye length $\\lambda_D = \\sqrt{\\varepsilon_0 T_e / (n e^2)}$ and the plasma
-  frequencies $\\omega_{pe}$, $\\omega_{pi} = \\sqrt{n e^2 / (\\varepsilon_0 m)}$;
-- the gyrofrequencies $\\omega_c = eB/m$ and the thermal gyroradii $\\rho = \\sqrt{T m}/(eB)$
-  (thermal speed $\\sqrt{T/m}$, the NRL convention) of the electrons and of the Ar$^+$ ions;
-- the collision frequencies with the gas, $\\nu = n_g \\sigma_m \\bar v$ with the mean speed
-  $\\bar v = \\sqrt{8T/(\\pi m)}$ and the gas density $n_g = p/(k_B T_g)$ at $T_g = 300$ K, and
-  the mean free paths $1/(n_g \\sigma_m)$; for the ions $\\sigma_m = Q_i + 2Q_b$ of Phelps'
-  Ar$^+$ + Ar fits (plasmacoll's `argon_ion_processes`), for the electrons a constant
-  $\\sigma_m = 10^{-19}$ m$^2$ (plasmacoll has no electron–argon set of its own: these come
-  from LXCat, which may not be redistributed);
-- the electron–ion Coulomb collision frequency of the NRL formulary, which overtakes the
-  electron–neutral one at HiPIMS densities;
-- the Hall parameters $\\omega_c/\\nu$ of electrons and ions, and the cross-field diffusion
-  coefficients: classical, $D_\\perp = (T_e / (m_e \\nu)) / (1 + (\\omega_{ce}/\\nu)^2)$, and
-  Bohm's $D_B = T_e/(16 e B)$.
+What it shows: the plasma is quasineutral on every scale of the device. The electrons are
+strongly magnetised (gyroradius about 0.1 mm, Hall parameter of hundreds) while the ions are
+not: the magnetic field holds the electrons and the electric field the ions. At 0.5 Pa the
+electron mean free path exceeds the gap, while an ion collides a few times crossing it. At
+HiPIMS densities Coulomb collisions outnumber those with the gas and lower the electron Hall
+parameter several times. Classical cross-field diffusion is 8 to 80 times below Bohm's at
+0.5 Pa; electron transport near Bohm's is what is called anomalous.
 
-The figures put the length scales against the density, with the electrode gap and the width
-of the racetrack marked; the frequencies against the density and against the field; the
-electron Hall parameter over $(B, p)$; and the two diffusion coefficients against the field.
-The table gives all of them for a typical DC case and a typical HiPIMS case.
-
-What it shows: the plasma is quasineutral on every scale of the device ($\\lambda_D$ of
-micrometres to a tenth of a millimetre); the electrons are strongly magnetised
-($\\rho_e \\sim 0.1$ mm, Hall parameter of hundreds) while the ions are not (gyroradius
-comparable to the gap, Hall parameter below one), which is what makes a magnetron: the
-magnetic field holds the electrons and the electric field the ions. At 0.5 Pa the electron
-mean free path (centimetres) exceeds the gap, while an ion collides a few times on its way
-across it. At HiPIMS densities the Coulomb collisions of the electrons with the ions outnumber
-those with the gas and lower the electron Hall parameter several times. Classical cross-field
-diffusion of the electrons is 8 to 80 times below Bohm's at 0.5 Pa between 10 and 100 mT
-(Bohm falls as $1/B$, classical as $\\nu/B^2$), and meets it only at the highest pressure and
-the lowest field; a cross-field electron transport near
-Bohm's, faster than classical, is what is called anomalous.
-
-Compared: the scales with each other and with the assumed geometry; the classical with Bohm's
-cross-field diffusion. Nothing is compared with a measurement: the two cases are typical
-values chosen here, not measured ones.
+Compared: the scales with each other and with the assumed geometry, and classical with Bohm
+diffusion.
 
 Reference: Lieberman and Lichtenberg, *Principles of Plasma Discharges and Materials
 Processing* (Wiley, 2nd ed. 2005); Chen, *Introduction to Plasma Physics and Controlled

@@ -1,45 +1,27 @@
 """Cathode sheath.
 
 Nearly all of the discharge voltage of a magnetron drops across a thin sheath in front of the
-target. This study estimates that sheath from textbook formulas: its thickness, the energy of
-the ions that reach the target, and the secondary electrons that keep the discharge going.
+target. This study estimates that sheath from textbook formulas for a DC magnetron: 400 V
+across the sheath, an ion current density of 100 A/m$^2$ (10 to 1000 A/m$^2$ for the range),
+argon at 0.1 to 100 Pa.
 
-**Thickness.** Without collisions the ion space charge limits the current density to the
-Child–Langmuir law $J = \\tfrac49\\varepsilon_0\\sqrt{2e/M}\\,V^{3/2}/s^2$ (byob's
-`sheath_width`, with the ion flux $J = e n_s u_B$ of the Bohm criterion). When the ions collide
-on the way, with a constant mean free path $\\lambda_i$ and the high-field drift
-$u = \\sqrt{2e\\lambda_i E/(\\pi M)}$, the law becomes
-$J = \\tfrac23\\left(\\tfrac53\\right)^{3/2}\\varepsilon_0\\sqrt{2e\\lambda_i/(\\pi M)}\\;
-V^{3/2}/s^{5/2}$ (Lieberman and Lichtenberg, ch. 6), with the potential growing as $z^{4/3}$
-and $z^{5/3}$ from the sheath edge in the two cases. The two thicknesses are equal at
-$\\lambda_i \\approx 0.3\\,s$; the study takes the thinner one, the collisionless law at low
-pressure and the collisional law at high pressure. $\\lambda_i = 1/(n_g\\sigma)$ uses Phelps'
-Ar$^+$–Ar cross sections from plasmacoll (isotropic plus backscatter, the backscatter being the
-charge exchange) at a centre-of-mass energy of 50 eV, in argon at 300 K.
+**Thickness.** The collisionless Child–Langmuir law (byob's `sheath_width`), or its collisional
+form where the ion mean free path falls below about 0.3 of the thickness; the study takes the
+thinner of the two. The mean free paths use Phelps' Ar$^+$–Ar cross sections from plasmacoll.
 
-**Ion energy at the target.** A charge exchange leaves a slow ion where it happens, which then
-falls through the rest of the sheath. With a charge exchange mean free path $\\lambda_{cx}$
-constant across the sheath, the last exchange happens at $z$ with probability density
-$e^{-(s - z)/\\lambda_{cx}}/\\lambda_{cx}$, and the ion arrives with $e(V - \\phi(z))$; a
-fraction $e^{-s/\\lambda_{cx}}$ crosses without collision and arrives with the full $eV$.
+**Ion energy at the target.** An ion that charge-exchanges in the sheath starts again at rest
+and gains only the rest of the potential; a fraction $e^{-s/\\lambda_{cx}}$ crosses without
+exchange. At 0.5 to 2 Pa the sheath is much thinner than the charge exchange mean free path,
+so nearly all ions arrive with the full sheath voltage.
 
-**Secondary electrons.** Each ion releases $\\gamma$ electrons from the target, which are
-accelerated through the sheath and ionise in the magnetic trap. Thornton's condition for a
-self-sustained discharge is $V_\\mathrm{min} = W_0/(\\gamma\\,\\varepsilon_i\\,\\varepsilon_e)$,
-with $W_0$ the energy spent per ion pair (30 to 60 eV in argon, as an effective value), $\\varepsilon_i$ the
-fraction of the ions that the target collects and $\\varepsilon_e$ the fraction of the electron
-energy used before the electron is lost.
+**Secondary electrons.** Thornton's condition for a self-sustained discharge is
+$V_\\mathrm{min} = W_0/(\\gamma\\,\\varepsilon_i\\,\\varepsilon_e)$, with $W_0$ the energy per
+ion pair, $\\gamma$ the secondary electron yield, and $\\varepsilon_i$, $\\varepsilon_e$ the
+fractions of the ions and of the electron energy that are used. With $\\gamma \\approx 0.1$ and
+$W_0 = 30$ eV it gives 300 V at best, the low end of DC magnetron voltages.
 
-The base case is a DC magnetron: $V = 400$ V across the sheath, an ion current density of
-100 A/m$^2$ (10 mA/cm$^2$; 10 and 1000 A/m$^2$ for the range), argon at 0.1 to 100 Pa,
-$T_e = 3$ eV at the sheath edge.
-
-Compared: byob's Child–Langmuir width with the closed form above (they agree to rounding), and
-Thornton's minimum voltage with the 300–600 V of DC magnetrons. Not compared: measurements of
-sheath thickness or ion energy distributions; the sheath is planar and one-dimensional, the
-magnetic field does not act on the ions, the cross sections are taken at one energy, the gas is
-not heated or rarefied, and the fast neutrals of the charge exchange and the ionisation inside
-the sheath are left out.
+Compared: byob's Child–Langmuir width with the closed-form law, and Thornton's minimum voltage
+with the 300–600 V of DC magnetrons.
 
 Reference: M. A. Lieberman and A. J. Lichtenberg, *Principles of Plasma Discharges and
 Materials Processing*, 2nd ed. (Wiley, 2005), ch. 6 (sheaths); J. A. Thornton, J. Vac. Sci.
