@@ -1,0 +1,47 @@
+# Read by gallery-tools without running the script (see the Adding a study guide).
+category: Test particles
+kind: example
+public: true
+codes:
+- byob
+- mpifield
+- mpiparticles
+- plasmacoll
+ladder: outside the ladder (test particles in a prescribed spoke)
+questions:
+- Q7
+summary: >-
+  Test argon ions, born where the electrons ionize in a made-up rotating three-spoke background and
+  Boris-pushed with charge exchange on argon: their energy at the target and where they land relative to
+  the spokes.
+docs_preset: quick
+runtime: about 10 seconds (quick); seconds (smoke)
+status: >-
+  A demonstration, not a model and not a verification. The background is the made-up one of the
+  rotating-spoke test electrons (shape, amplitudes and speed chosen by hand), the ions do not act back on
+  it, the slab has no axial structure apart from a uniform presheath field (no cathode sheath: the
+  energies are those at the sheath edge, before the sheath voltage is added), and the birth distribution
+  is the background's ionization rate, not the events of the test electrons. The Ar+ + Ar cross sections
+  are Phelps' (1994) fits, not stand-ins; there are no sputtered metal ions. What it shows qualitatively:
+  the ions are too slow to follow the spokes, so the flux to the target peaks behind each spoke rather
+  than where the ions are born, and the most energetic ions are those born high above the target and
+  inside the spoke potential hump.
+figures:
+- >-
+  The energy distribution of the ions at the cathode sheath edge (the target), and of the few that leave
+  towards the substrate or through the outer edge, per eV and relative to all the ions born (log scale).
+  The presheath field alone gives at most 30 eV; the rest comes from the in-plane potential of the well
+  and the spokes. The sheath voltage adds to all of them.
+- >-
+  At the racetrack, against the angle in the spoke frame (the spokes move towards negative angles): the
+  ion flux to the target and the ion birth rate (both relative to their mean over the ring), the potential
+  at R0 for reference, and below the mean energy of the ions at the target and the share of them above
+  30 eV. The flux lags the birth by the distance the spoke moves while the ions fall (about 1.3 µs, 13 mm).
+- >-
+  Where the energetic ions come from: the share of the ions born in a cell of the spoke frame that reach
+  the target above 30 eV, with the -10, 0 and 6 V contours of the potential (cells with fewer than 30
+  births left blank), and below the same share against the height of birth.
+- >-
+  One period of the pattern in the lab frame (press Play, or drag the slider): the plasma potential, three
+  spokes moving clockwise at 10 km/s, and 500 of the test ions coloured by kinetic energy. The ions stay
+  close to where they were born while the spokes move on.
