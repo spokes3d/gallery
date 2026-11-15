@@ -269,33 +269,34 @@ def plot(result: dict) -> None:
         "(Charoy's at its 50 eV, the map at 5 eV)."
     )
 
-    fig, (left, right) = plt.subplots(1, 2, figsize=(7.6, 3.8), constrained_layout=True)
+    fig, (top, bottom) = plt.subplots(
+        2, 1, figsize=(6.4, 7.0), sharex=True, constrained_layout=True
+    )
     req = next(iter(result["by_domain"].values()))
-    left.plot(densities, debye_length(densities, TE) * 1e6, label="Debye length")
-    left.axhline(
+    top.plot(densities, debye_length(densities, TE) * 1e6, label="Debye length")
+    top.axhline(
         gyroradius(TE, B_CATHODE) * 1e6,
         color="C1",
         label=f"gyroradius at {B_CATHODE * 1e3:g} mT",
     )
-    left.plot(densities, req["dx"] * 1e6, "k--", lw=1, label="cell size")
-    left.set_xscale("log")
-    left.set_yscale("log")
-    left.set_xlabel("n [m$^{-3}$]")
-    left.set_ylabel("length [µm]")
-    left.legend(fontsize=7)
-    left.grid(True, alpha=0.3)
+    top.plot(densities, req["dx"] * 1e6, "k--", lw=1, label="cell size")
+    top.set_xscale("log")
+    top.set_yscale("log")
+    top.set_ylabel("length [µm]")
+    top.legend(fontsize=7)
+    top.grid(True, alpha=0.3)
     for i, (name, req) in enumerate(result["by_domain"].items()):
-        right.plot(densities, req["markers"], color=f"C{i}", label=name)
-    right.axhline(1e10, color="0.4", lw=0.8, ls=":")
-    right.set_xscale("log")
-    right.set_yscale("log")
-    right.set_xlabel("n [m$^{-3}$]")
-    right.set_ylabel("markers")
-    right.legend(fontsize=7)
-    right.grid(True, alpha=0.3)
+        bottom.plot(densities, req["markers"], color=f"C{i}", label=name)
+    bottom.axhline(1e10, color="0.4", lw=0.8, ls=":")
+    bottom.set_xscale("log")
+    bottom.set_yscale("log")
+    bottom.set_xlabel("n [m$^{-3}$]")
+    bottom.set_ylabel("markers")
+    bottom.legend(fontsize=7)
+    bottom.grid(True, alpha=0.3)
     fig.caption = (
-        "Left: the Debye length, the electron gyroradius at the cathode and the cell size "
-        "(the smaller of the two). Right: the markers of a run, "
+        "Top: the Debye length, the electron gyroradius at the cathode and the cell size "
+        "(the smaller of the two). Bottom: the markers of a run, "
         f"{MARKERS_PER_CELL} per cell and species; dotted: 10^10, about what fits in the "
         "memory of a few GPUs."
     )

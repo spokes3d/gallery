@@ -613,11 +613,8 @@ def plot(result: dict):
     axis_cm = result["axis"] * 100
     snapshots = result["snapshots"]
     t0 = result["times"][0]
-    # the ionization at four instants, two by two (the potential and the electrons are in the
-    # animation): small enough panels to read on a phone, one colorbar
-    fig, axes = plt.subplots(
-        2, 2, figsize=(6.4, 6.4), sharex=True, sharey=True, constrained_layout=True
-    )
+    # the ionization at four instants, in two figures of two stacked maps (the potential and the
+    # electrons are in the animation), with one colour scale for all four
     ion_max = (
         max(
             np.percentile(gaussian_filter(s["ion"].astype(float), 1.2), 99.7)
@@ -625,28 +622,35 @@ def plot(result: dict):
         )
         or 1.0
     )
-    for ax, snap in zip(axes.ravel(), snapshots, strict=True):
-        phi = potential_lab(result, snap["t"])
-        ionization = ax.imshow(
-            gaussian_filter(snap["ion"].astype(float), 1.2).T,
-            origin="lower",
-            extent=extent,
-            cmap="magma",
-            vmin=0,
-            vmax=ion_max,
+    for pair in (snapshots[:2], snapshots[2:]):
+        fig, axes = plt.subplots(
+            2, 1, figsize=(5.6, 9.0), sharex=True, constrained_layout=True
         )
-        ax.contour(
-            axis_cm, axis_cm, phi.T, levels=[0, 6], colors="#66ccff", linewidths=0.6
-        )
-        ax.set_title(f"t = {(snap['t'] - t0) * 1e6:.2f} µs")
-        ax.set_aspect("equal")
-        ax.set_xlim(-4.5, 4.5)
-        ax.set_ylim(-4.5, 4.5)
-    for ax in axes[1]:
-        ax.set_xlabel("x [cm]")
-    for ax in axes[:, 0]:
-        ax.set_ylabel("y [cm]")
-    fig.colorbar(ionization, ax=axes, label="ionization events [arb.]", shrink=0.8)
+        for ax, snap in zip(axes, pair, strict=True):
+            phi = potential_lab(result, snap["t"])
+            ionization = ax.imshow(
+                gaussian_filter(snap["ion"].astype(float), 1.2).T,
+                origin="lower",
+                extent=extent,
+                cmap="magma",
+                vmin=0,
+                vmax=ion_max,
+            )
+            ax.contour(
+                axis_cm,
+                axis_cm,
+                phi.T,
+                levels=[0, 6],
+                colors="#66ccff",
+                linewidths=0.6,
+            )
+            ax.set_title(f"t = {(snap['t'] - t0) * 1e6:.2f} µs")
+            ax.set_aspect("equal")
+            ax.set_xlim(-4.5, 4.5)
+            ax.set_ylim(-4.5, 4.5)
+            ax.set_ylabel("y [cm]")
+        axes[-1].set_xlabel("x [cm]")
+        fig.colorbar(ionization, ax=axes, label="ionization events [arb.]", shrink=0.8)
 
     # the followed electrons in the spoke frame (the pattern stands still there): they bounce
     # radially in the well, drift around the racetrack and cross the spokes
@@ -704,10 +708,8 @@ def plot(result: dict):
             "flux to the anode",
         ),
     ]
-    fig, axes = plt.subplots(
-        2, 2, figsize=(6.6, 6.6), sharex=True, sharey=True, constrained_layout=True
-    )
-    for ax, (values, cmap, label, title) in zip(axes.ravel(), panels, strict=True):
+    for values, cmap, label, title in panels:
+        fig, ax = plt.subplots(figsize=(6.4, 5.2), constrained_layout=True)
         image = ax.imshow(values.T, origin="lower", extent=extent, cmap=cmap)
         ax.contour(
             axis_cm,
@@ -722,9 +724,7 @@ def plot(result: dict):
         ax.set_aspect("equal")
         ax.set_xlim(-4.5, 4.5)
         ax.set_ylim(-4.5, 4.5)
-    for ax in axes[1]:
         ax.set_xlabel("x [cm] (spoke frame)")
-    for ax in axes[:, 0]:
         ax.set_ylabel("y [cm]")
 
     fig, ax = plt.subplots(figsize=(7, 3.8), constrained_layout=True)

@@ -386,53 +386,56 @@ def plot_traces(result: dict) -> None:
     """The fixed-bias signals at the three probes against the background there."""
     us = (result["t"] - result["t0"]) * 1e6
     fig, axes = plt.subplots(
-        2, 2, figsize=(7.2, 5.6), sharex=True, constrained_layout=True
+        4, 1, figsize=(7, 9.6), sharex=True, constrained_layout=True
     )
     for k, (name, trace) in enumerate(result["traces"].items()):
         color = f"C{k}"
-        axes[0, 0].plot(
-            us, trace["phi"], color=color, label=f"plasma potential, {name}"
-        )
-        axes[0, 0].plot(
+        axes[0].plot(us, trace["phi"], color=color, label=f"plasma potential, {name}")
+        axes[0].plot(
             us, trace["vf"], color=color, ls="--", label=f"floating potential, {name}"
         )
-        axes[0, 1].plot(us, trace["te"], color=color, label=name)
-        axes[1, 0].plot(us, trace["n"], color=color, label=name)
-        axes[1, 1].plot(
+        axes[1].plot(us, trace["te"], color=color, label=name)
+        axes[2].plot(us, trace["n"], color=color, label=name)
+        axes[3].plot(
             us, trace["iis"] * 1e3, color=color, label=f"ion saturation, {name}"
         )
-        axes[1, 1].plot(
+        axes[3].plot(
             us,
             trace["ies"] * 1e3,
             color=color,
             ls="--",
             label=f"electron saturation, {name}",
         )
-    axes[0, 0].set_title("solid: plasma potential, dashed: floating", fontsize=9)
-    axes[0, 0].set_ylabel("potential [V]")
-    axes[0, 1].set_title("electron temperature", fontsize=9)
-    axes[0, 1].set_ylabel("$T_e$ [eV]")
-    axes[0, 1].legend(fontsize=8, loc="upper right")
-    axes[1, 0].set_title("density", fontsize=9)
-    axes[1, 0].set_ylabel("$n_e$ [m$^{-3}$]")
-    axes[1, 0].set_yscale("log")
-    axes[1, 1].set_title("solid: ion, dashed: electron saturation", fontsize=9)
-    axes[1, 1].set_ylabel("probe current [mA]")
-    axes[1, 1].set_yscale("log")
-    for ax in axes[1]:
-        ax.set_xlabel("t [µs]")
-    for ax in axes.ravel():
+    axes[0].set_title("solid: plasma potential, dashed: floating", fontsize=9)
+    axes[0].set_ylabel("potential [V]")
+    axes[1].set_title("electron temperature", fontsize=9)
+    axes[1].set_ylabel("$T_e$ [eV]")
+    axes[1].legend(fontsize=8, loc="upper right")
+    axes[2].set_title("density", fontsize=9)
+    axes[2].set_ylabel("$n_e$ [m$^{-3}$]")
+    axes[2].set_yscale("log")
+    axes[3].set_title("solid: ion, dashed: electron saturation", fontsize=9)
+    axes[3].set_ylabel("probe current [mA]")
+    axes[3].set_yscale("log")
+    axes[-1].set_xlabel("t [µs]")
+    for ax in axes:
         ax.grid(True, alpha=0.3)
 
 
 def plot_characteristics(result: dict) -> None:
-    """Sweeps centred on the three instants at R0: the I-V and ln I_e with the fitted lines."""
-    fig, axes = plt.subplots(
-        3, 2, figsize=(7.2, 8.4), sharex=True, constrained_layout=True
+    """Sweeps centred on the three instants at R0: the I-V and ln I_e with the fitted lines.
+
+    Two figures of three stacked panels: the probe current, then the electron current.
+    """
+    _, current_axes = plt.subplots(
+        3, 1, figsize=(7, 8.4), sharex=True, constrained_layout=True
+    )
+    _, electron_axes = plt.subplots(
+        3, 1, figsize=(7, 8.4), sharex=True, constrained_layout=True
     )
     styles = {SWEEP_RATIOS[0]: ("C0", "o"), SWEEP_RATIOS[-1]: ("C3", "s")}
     for row, label in enumerate(INSTANTS):
-        left, right = axes[row]
+        left, right = current_axes[row], electron_axes[row]
         title = []
         for item in result["characteristics"]:
             if item["instant"] != label:
@@ -470,15 +473,15 @@ def plot_characteristics(result: dict) -> None:
             f"{label}: true $T_e$ {truth['te']:.1f} eV, $V_p$ {truth['phi']:.1f} V",
             fontsize=9,
         )
-        right.set_title("fit " + "; ".join(title), fontsize=8)
+        right.set_title(f"{label}: fit " + "; ".join(title), fontsize=8)
         left.set_ylabel("probe current [mA]")
         right.set_ylabel("electron current [mA]")
         right.set_yscale("log")
         for ax in (left, right):
             ax.grid(True, alpha=0.3)
-    axes[0, 1].legend(fontsize=7, loc="lower right")
-    for ax in axes[-1]:
-        ax.set_xlabel("probe bias [V]")
+    electron_axes[0].legend(fontsize=7, loc="lower right")
+    for axes in (current_axes, electron_axes):
+        axes[-1].set_xlabel("probe bias [V]")
 
 
 def staircase(entry: dict, key: str):
