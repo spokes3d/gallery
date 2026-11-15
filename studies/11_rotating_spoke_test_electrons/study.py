@@ -75,9 +75,15 @@ N_SHOW = 3000  # markers kept per frame for the figures
 N_BINS = 180  # azimuthal bins
 SNAPSHOTS = 4
 MOVIE_FRAMES = 30  # frames of the animation over the recorded period
-N_TRACKS = 8  # electrons followed through the recorded period
-TRACK_EVERY = 50  # steps between the samples of their trajectories
-MOVIE_MARKERS = 1500  # markers per frame of the animation
+N_TRACKS = 8  # electrons followed from the start of the recording
+N_TRACKS_SHOWN = 4  # of them, the ones that stay longest, in the figures
+# their positions every 0.3 ns, well below the radial bounce in the well (about 13 ns) and the
+# gyration (1.2 ns), over the first 0.8 us of the recording
+TRACK_EVERY = 3  # steps
+TRACK_WINDOW = 8.0e-7  # [s]
+TRACK_FRAMES = 60  # frames of the animation of the followed electrons
+TRACK_TAIL = 1.0e-7  # length of their trails in it [s]
+MOVIE_MARKERS = 1350  # markers per frame of the animation
 
 
 def spoke_shape(theta):
@@ -228,7 +234,8 @@ def run(preset: str) -> dict:
     spoke_ion = map_field()
     # period averages in the spoke frame: markers, their energy, and the anode flux
     spoke_maps = {name: map_field() for name in ("density", "energy", "anode")}
-    tracked, tracks, track_times = None, [], []
+    tracked, tracks = None, []
+    track_steps = int(round(TRACK_WINDOW / DT))
     frame_ion, anode_count, ion_count = map_field(), 0, 0
     frames = []
     t = 0.0
@@ -291,7 +298,11 @@ def run(preset: str) -> dict:
         if missing > 0:
             store.add(*sample_electrons(background, rng, missing, t))
 
-        if recording and (step - n_burn) % TRACK_EVERY == 0:
+        if (
+            recording
+            and step - n_burn < track_steps
+            and (step - n_burn) % TRACK_EVERY == 0
+        ):
             n = store.length
             ids, alive = store.ids[:n], store.alive[:n]
             if tracked is None:
@@ -300,13 +311,13 @@ def run(preset: str) -> dict:
                     alive & (np.abs(np.hypot(*store.positions[:2, :n]) - R0) < 0.5 * WR)
                 )
                 tracked = ids[rng.choice(near, size=N_TRACKS, replace=False)]
+                track_start = t
             sample = np.full((N_TRACKS, 3), np.nan)
             for k, marker in enumerate(tracked):
                 where = np.flatnonzero((ids == marker) & alive)
                 if where.size:
                     sample[k] = store.positions[:, where[0]]
             tracks.append(sample)
-            track_times.append(t)
 
         if recording and (step - n_burn + 1) % per_frame == 0:
             store.compact()
@@ -353,8 +364,10 @@ def run(preset: str) -> dict:
         "spoke_maps": {
             name: field.to_numpy()[..., 0] for name, field in spoke_maps.items()
         },
+        # (electron, sample, x y z), from track_start every track_dt
         "tracks": np.array(tracks, dtype=np.float32).transpose(1, 0, 2),
-        "track_times": np.array(track_times),
+        "track_start": track_start,
+        "track_dt": TRACK_EVERY * DT,
         "axis": sample["x"].values,
         "potential": sample["potential"].values.astype(np.float32),
         "wall_time": time.time() - start,
@@ -364,11 +377,14 @@ def run(preset: str) -> dict:
 def shrink(keep: dict) -> dict:
     """The large arrays of the cached result in half precision, under the 500 kB limit.
 
-    The followed electrons every second sample (100 steps, a millimetre of drift), x and y only;
-    the spoke-frame ionization relative to its maximum; the potential map.
+    The followed electrons that stay longest, x and y only (to 15 um); the spoke-frame
+    ionization relative to its maximum; the potential map.
     """
-    keep["tracks"] = keep["tracks"][:, ::2, :2].astype(np.float16)
-    keep["track_times"] = keep["track_times"][::2].astype(np.float32)
+    tracks = keep["tracks"]
+    kept = np.sort(
+        np.argsort(-np.isfinite(tracks[:, :, 0]).sum(axis=1))[:N_TRACKS_SHOWN]
+    )
+    keep["tracks"] = tracks[kept, :, :2].astype(np.float16)
     keep["potential"] = keep["potential"].astype(np.float16)  # +-25 V to 0.01 V
     ion = keep["spoke_ion"]
     keep["spoke_ion"] = (ion / max(float(ion.max()), 1e-30)).astype(np.float16)
@@ -514,15 +530,6 @@ def animate(result: dict):
     )
     fig.colorbar(image, ax=ax, label="potential [V]", shrink=0.85)
     fig.colorbar(dots, ax=ax, label="electron energy [eV]", shrink=0.85)
-    # the followed electrons: the last tenth of a period of each trajectory
-    tracks = result["tracks"].astype(float) * 100
-    track_times = result["track_times"]
-    tail = PERIOD / 10
-    colors = [f"C{k % 10}" for k in range(len(tracks))]
-    trails = [ax.plot([], [], color=color, lw=1.5)[0] for color in colors]
-    heads = ax.scatter(
-        np.zeros(len(tracks)), np.zeros(len(tracks)), s=22, c=colors, zorder=3
-    )
     ax.set_aspect("equal")
     ax.set_xlim(-4.5, 4.5)
     ax.set_ylim(-4.5, 4.5)
@@ -536,12 +543,7 @@ def animate(result: dict):
             np.c_[frame["x"].astype(float), frame["y"].astype(float)] * 100
         )
         dots.set_array(frame["energy"].astype(float))
-        window = (track_times > frame["t"] - tail) & (track_times <= frame["t"])
-        for trail, track in zip(trails, tracks, strict=True):
-            trail.set_data(track[window, 0], track[window, 1])
-        last = np.flatnonzero(window)[-1] if window.any() else 0
-        heads.set_offsets(tracks[:, last, :2])
-        return image, dots, heads, *trails
+        return image, dots
 
     animation = FuncAnimation(fig, update, frames=len(movie), interval=120)
     # the slider of the web figure shows the time
@@ -549,11 +551,64 @@ def animate(result: dict):
     return animation
 
 
+def track_times(result: dict) -> np.ndarray:
+    """The times of the samples of the followed electrons [s]."""
+    return result["track_start"] + result["track_dt"] * np.arange(
+        result["tracks"].shape[1]
+    )
+
+
+def animate_tracks(result: dict):
+    """The followed electrons in the spoke frame over the potential, with their recent trails."""
+    from matplotlib.animation import FuncAnimation
+
+    times = track_times(result)
+    tracks = result["tracks"].astype(float)
+    # in the spoke frame, where the potential stands still (one picture for all frames); drawn
+    # every third sample, 0.9 ns, still about 14 points per radial bounce
+    xs, ys = rotate(tracks[:, :, 0], tracks[:, :, 1], -OMEGA * times)
+    xs, ys, times = xs[:, ::3] * 100, ys[:, ::3] * 100, times[::3]
+    # the last sample of each frame, the frames evenly over the recorded samples
+    ends = np.linspace(0, len(times) - 1, min(TRACK_FRAMES, len(times))).astype(int)
+    tail = int(round(TRACK_TAIL / (times[1] - times[0]))) if len(times) > 1 else 1
+    extent = (-L * 100, L * 100, -L * 100, L * 100)
+    fig, ax = plt.subplots(figsize=(6.4, 5.2), constrained_layout=True)
+    image = ax.imshow(
+        result["potential"].astype(float).T,
+        origin="lower",
+        extent=extent,
+        cmap="cividis",
+        vmin=-12,
+        vmax=12,
+    )
+    fig.colorbar(image, ax=ax, label="potential [V]", shrink=0.85)
+    colors = [f"C{k % 10}" for k in range(len(tracks))]
+    trails = [ax.plot([], [], color=color, lw=1.2)[0] for color in colors]
+    heads = ax.scatter(xs[:, 0], ys[:, 0], s=24, c=colors, zorder=3, lw=0)
+    ax.set_aspect("equal")
+    ax.set_xlim(-4.5, 4.5)
+    ax.set_ylim(-4.5, 4.5)
+    ax.set_xlabel("x [cm] (spoke frame)")
+    ax.set_ylabel("y [cm]")
+
+    def update(i):
+        end = ends[i]
+        shown = slice(max(0, end - tail), end + 1)
+        for k, trail in enumerate(trails):
+            trail.set_data(xs[k, shown], ys[k, shown])
+        heads.set_offsets(np.c_[xs[:, end], ys[:, end]])
+        return heads, *trails
+
+    animation = FuncAnimation(fig, update, frames=len(ends), interval=120)
+    animation._plasma_sweep = ("t [ns]", [(times[e] - times[0]) * 1e9 for e in ends])
+    return animation
+
+
 def plot(result: dict):
-    """Draw the animation and the figures of the period; return the animation."""
+    """Draw the animations and the figures of the period; return the animations."""
     from scipy.ndimage import gaussian_filter
 
-    animation = animate(result)
+    animations = [animate(result), animate_tracks(result)]
     extent = (-L * 100, L * 100, -L * 100, L * 100)
     axis_cm = result["axis"] * 100
     snapshots = result["snapshots"]
@@ -593,8 +648,8 @@ def plot(result: dict):
         ax.set_ylabel("y [cm]")
     fig.colorbar(ionization, ax=axes, label="ionization events [arb.]", shrink=0.8)
 
-    # the followed electrons over the whole period, in the spoke frame (the pattern stands
-    # still there): they drift around the racetrack and cross the spokes
+    # the followed electrons in the spoke frame (the pattern stands still there): they bounce
+    # radially in the well, drift around the racetrack and cross the spokes
     fig, ax = plt.subplots(figsize=(6.4, 5.6), constrained_layout=True)
     image = ax.imshow(
         result["potential"].astype(float).T,
@@ -604,16 +659,11 @@ def plot(result: dict):
         vmin=-12,
         vmax=12,
     )
-    # four of the followed electrons, the ones that stay longest, over the first quarter of the
-    # period each (less than a turn around the racetrack): the radial bounce in the well and
-    # the drift across the spokes stay readable
-    times = result["track_times"].astype(float)
+    times = track_times(result)
     tracks = result["tracks"].astype(float)
-    shown = times <= times[0] + PERIOD / 4
-    kept = np.argsort(-np.isfinite(tracks[:, :, 0]).sum(axis=1))[:4]
-    for k in kept:
-        xs, ys = rotate(tracks[k, shown, 0], tracks[k, shown, 1], -OMEGA * times[shown])
-        ax.plot(xs * 100, ys * 100, lw=1.2, color=f"C{k % 10}")
+    for k, track in enumerate(tracks):
+        xs, ys = rotate(track[:, 0], track[:, 1], -OMEGA * times)
+        ax.plot(xs * 100, ys * 100, lw=1.0, color=f"C{k % 10}")
         start = np.flatnonzero(np.isfinite(xs))
         if start.size:
             ax.plot(
@@ -708,7 +758,7 @@ def plot(result: dict):
     lines = ax.get_lines() + probe_axis.get_lines()
     ax.legend(lines, [line.get_label() for line in lines], fontsize=8, loc="upper left")
     ax.grid(True, alpha=0.3)
-    return animation
+    return animations
 
 
 def table(result: dict) -> str:
