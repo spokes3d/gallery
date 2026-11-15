@@ -12,54 +12,43 @@ questions:
 - Q6
 - Q7
 summary: >-
-  Test electrons, Boris-pushed through a made-up rotating three-spoke background with argon collisions:
+  Test electrons pushed through a made-up rotating three-spoke background with argon collisions:
   where they cross the field and ionize.
 docs_preset: quick
 runtime: about 3 minutes (quick); seconds (smoke)
 status: >-
-  A demonstration, not a model and not a verification. The background is prescribed and made up (shape,
-  amplitudes and speed chosen by hand), the electrons do not act back on it and the cross sections
-  are rough stand-ins. With 10 000 markers the azimuthal profiles are averaged over a whole period
-  and are smooth; the time signals are still noisy. What it shows qualitatively: the cross-field flux
-  to the anode is concentrated at the leading edge of each spoke, and the ionization is enhanced behind
-  it.
+  A demonstration, not a model and not a verification. The background is made up and not self-
+  consistent (no Poisson equation, the electrons do not act back on it), and the cross sections
+  are rough stand-ins. Qualitatively, the cross-field flux to the anode is concentrated at the
+  leading edge of each spoke and the ionization is enhanced behind it.
 figures:
 - >-
-  The rotating spokes over one period of the pattern in the lab frame (press Play, or drag the
-  slider): the plasma potential, three spokes on the racetrack moving clockwise at 10 km/s,
-  1350 of the test electrons coloured by kinetic energy. The pattern turns by a third of a turn
-  per period, so the last frame looks like the first one.
+  One period of the rotating spokes in the lab frame (press Play, or drag the slider): the plasma
+  potential and 1350 test electrons coloured by kinetic energy.
 - >-
-  Four followed electrons over the first 0.8 µs of the recording, in the spoke frame where the
-  pattern stands still, over the potential, with the trails of their last 100 ns (recorded every
-  0.3 ns): each bounces radially in the well about every 13 ns while it drifts clockwise around the
-  racetrack at about 100 km/s, ten times faster than the spokes, and crosses them.
+  Four followed electrons over 0.8 µs in the spoke frame, over the potential, with the trails of
+  their last 100 ns.
 - >-
-  The ionization events of the test electrons around the first two of four instants of the period,
-  in the lab frame, with the 0 V and 6 V contours of the potential: the ionization zones turn with
-  the spokes.
+  Ionization events around the first two of four instants of the period, in the lab frame, with
+  the 0 V and 6 V contours of the potential.
 - >-
-  The ionization events around the last two of the four instants, on the same colour scale: the
-  ionization zones have turned further with the spokes.
+  The same for the last two instants, on the same colour scale.
 - >-
-  The same four electrons over the whole 0.8 µs in the spoke frame, over the potential (a dot marks
-  where each starts): their paths through the well and across the spokes.
+  The paths of the same four electrons over the whole 0.8 µs in the spoke frame, over the
+  potential (a dot marks the start).
 - >-
-  The ionization averaged over the period over the whole plane in the spoke frame, with the 0 V and
-  6 V contours of the potential.
+  Ionization rate averaged over the period in the spoke frame, with the 0 V and 6 V contours of
+  the potential.
 - >-
-  The electron density averaged over the period in the spoke frame, with the same contours of the
-  potential.
+  Electron density averaged over the period, with the same contours.
 - >-
-  The mean electron energy averaged over the period in the spoke frame, with the same contours of the
-  potential.
+  Mean electron energy averaged over the period, with the same contours.
 - >-
-  The cross-field electron flux to the anode averaged over the period in the spoke frame, with the
-  same contours of the potential.
+  Cross-field electron flux to the anode averaged over the period, with the same contours.
 - >-
   Azimuthal profiles at the racetrack in the spoke frame, averaged over the period and normalized:
-  the potential, the mean electron energy, the ionization rate and the cross-field electron flux to
-  the anode. The spokes move towards negative angles.
+  potential, mean electron energy, ionization rate and cross-field flux. The spokes move towards
+  negative angles.
 - >-
-  Global signals against time: the total ionization rate and the cross-field current (relative to
-  their means), and the potential a probe fixed at (R0, 0) sees.
+  Total ionization rate and cross-field current against time (relative to their means), and the
+  potential a fixed probe at (R0, 0) sees.

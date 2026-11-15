@@ -1,47 +1,24 @@
 """Magnetron electron orbits.
 
 Single electrons in the field of a circular planar magnetron, without collisions: they gyrate
-about the field, bounce along the arch of the field lines between its feet, and drift around
-the axis, along the racetrack. The study pushes them with the full Lorentz force and compares
-what they do with the guiding-centre theory of the textbooks.
+about the field, bounce along the arch of the field lines and drift around the axis, along the
+racetrack. The study pushes them with the full Lorentz force (mpiparticles' compiled Boris
+scheme, $\\omega_{ce}\\Delta t < 0.1$) and compares their motion with guiding-centre theory.
 
 The magnetic field is that of the balanced 2-inch magnetron of the study *Magnetron magnetic
-field* (copied here: NdFeB magnets with $B_\\mathrm{rem} = 1.2$ T, a centre cylinder 12 mm in
-radius and a ring from 20 to 23.3 mm, 8 mm high, 8 mm below the target; each side face of a
-magnet is a current sheet, summed from circular loops with the exact field of a loop). The
-electric field is prescribed and only axial, $E_z(z)$: a cathode sheath of 300 V over 1 mm
-with a linear field, $\\phi = -300\\,\\mathrm{V}\\,(1 - z/1\\,\\mathrm{mm})^2$, and above it a
-uniform presheath field $E_z = -2$ kV/m (the potential rises away from the target). Both
-are assumptions, typical of a DC magnetron, not a solution of Poisson's equation.
+field*. The electric field is prescribed and axial: a 300 V cathode sheath 1 mm thick and,
+above it, a presheath field of 2 kV/m, typical of a DC magnetron. Each electron starts on the
+field line whose apex is 4 mm above the target, at the bottom of its potential well
+$U = \\mu B - e\\phi$, with a given kinetic energy and pitch angle.
 
-Each electron starts on the field line whose apex is 4 mm above the target, at the bottom of
-its potential well along that line (the minimum of $\\mu B - e\\phi$), with a kinetic energy $W$
-and a pitch angle $\\alpha$ there, both measured in the frame of the $E\\times B$ drift. The
-electrons are stored in an mpiparticles `ParticleStore` and pushed with its compiled Boris
-scheme (`boris_push`, $\\Delta t = 5$ ps, $\\omega_{ce}\\Delta t < 0.1$). Their guiding centres
-are reconstructed from position and velocity, $X = x - m\\,(B\\times v_\\perp)/(qB^2)$; the bounce
-period is measured from the oscillation of the guiding centre's radius, and the azimuthal
-drift from its angle over a whole number of bounces.
+The theory gives the bounce period $\\tau_b = \\oint ds/v_\\parallel$ in that well and the
+bounce-averaged $E\\times B$, grad-B and curvature drifts, which all point around the axis in
+the direction of $E\\times B$. $E\\times B$ dominates below a few eV, the grad-B drift above.
+The push is measured through the guiding centres reconstructed from the orbits.
 
-The guiding-centre theory: the parallel motion along the field line in the potential
-$U(s) = \\mu B(s) - e\\phi(s)$ with the magnetic moment $\\mu = m v_\\perp^2/2B$ conserved,
-which gives the bounce period $\\tau_b = \\oint ds/v_\\parallel$; and the azimuthal drifts
-$v_E = E\\times B/B^2$, $v_{\\nabla B} = \\mu\\, B\\times\\nabla B/(qB^2)$ and
-$v_\\kappa = m v_\\parallel^2\\, B\\times\\kappa/(qB^2)$ ($\\kappa$ the curvature of the field line),
-averaged over a bounce. For small bounces the period tends to the harmonic one,
-$2\\pi\\sqrt{m/U''}$ at the bottom of the well. All three drifts point the same way, around
-the axis in the direction of $E\\times B$. The well is magnetic and electric: the field is
-1.3 times stronger at the outer foot of this line than at its minimum (4 times at the inner
-foot), and the presheath field pushes the electrons back up the arch, away from the target.
-
-Compared: the measured bounce periods and azimuthal drift speeds with the guiding-centre
-values, over a scan of energies (1 to 50 eV at a pitch angle of 75°) and of pitch angles
-(20° to 88° at 5 eV). The electrons are well magnetized (gyroradius about 0.2 mm at 5 eV and
-0.7 mm at 50 eV, against field scales of several mm): the drifts agree to better than 1 % and
-the bounce periods to about 1 %, with the largest differences at the highest energy, the
-first-order theory's expected error. Not compared: collisions,
-the self-consistent sheath, and the electrons whose bounce reaches the sheath, for which the
-theory does not hold (one is shown in the orbits, none is in the scans).
+Compared: the bounce periods and azimuthal drift speeds of the push with the guiding-centre
+values, over energies of 1 to 50 eV and pitch angles of 20° to 88°. The drifts agree to better
+than 1 % and the bounce periods to about 1 %.
 
 Reference: the guiding-centre drifts and the magnetic mirror in Chen, *Introduction to Plasma
 Physics and Controlled Fusion*, 3rd ed. (Springer, 2016), chapter 2; the magnetron and its

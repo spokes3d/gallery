@@ -1,42 +1,23 @@
 """Langmuir probe in spokes.
 
-What would a Langmuir probe show of a rotating spoke, and what would it miss? A small planar
-probe tip (a disc of 0.5 mm radius) sits at three fixed points in the lab frame: on the
-racetrack at $R_0 = 3$ cm, 3 mm inside it and 1.5 mm outside it. The background is the made-up
-three-spoke pattern of the rotating-spoke test-electron study, built with byob in the frame that
-rotates with the spokes and turned at 10 km/s (at $R_0$) in the lab frame: a 25 V radial well,
-three 12 V potential humps with a sharp leading edge and a long tail, $T_e$ from 3 eV outside to
-7 eV inside a spoke, and the density from Boltzmann's relation. At each instant the probe sees
-the plasma at its position rotated back into the spoke frame.
+What would a Langmuir probe show of a rotating spoke? A planar probe tip of 0.5 mm radius sits
+at three fixed points: on the racetrack at $R_0 = 3$ cm, 3 mm inside it and 1.5 mm outside it.
+The background is the made-up three-spoke pattern of the rotating-spoke test-electron study,
+turning at 10 km/s: a 25 V radial well, three 12 V potential humps with a sharp leading edge, and $T_e$ from 3 eV outside to 7 eV inside a spoke.
 
-The probe is a wall of byob in the local plasma: the ions reach it at the Bohm flux of the
-sheath edge, $n_s u_B$ with $n_s = n\\,e^{-1/2}$, and the electrons with the random flux
-$\\frac14 n_s \\bar v_e$ reduced by the Boltzmann factor of byob's sheath drop in front of a
-wall biased to $V$. Above the sheath edge potential byob has no electron sheath, so the study
-continues the electron current to its saturation at the plasma potential, $\\frac14 e A n \\bar
-v_e$ (the standard thin-sheath probe):
+The probe current follows byob's sheath (Bohm ion flux, Boltzmann-reduced electron flux),
+continued up to the electron saturation at the plasma potential:
 
 $$I(V) = \\tfrac14 e A n \\bar v_e\\, e^{-\\max(V_p - V,\\,0)/T_e} - e A n\\,e^{-1/2} u_B.$$
 
-The first figure shows what a probe at a fixed bias records as the spokes pass: the floating
-potential (byob's floating sheath drop), and the ion and electron saturation currents. Then the
-bias is swept from $-50$ to $+25$ V in a sawtooth, with a little white noise on the current, and
-each sweep is analysed the standard way: a straight line through the ion-saturation part, the
-floating potential where the current changes sign, $T_e$ from the slope of $\\ln I_e$ in the
-electron-retardation region (the ion line corrected for the electron tail, three passes), and
-$V_p$ at the knee where that line meets the saturation line;
-$n_e$ follows from the ion saturation current and the fitted $T_e$. The second figure shows sweeps
-centred between the spokes, on a leading edge and inside a spoke; the third the fitted $n_e$,
-$T_e$ and $V_p$ against time, for sweeps 0.1, 1 and 10 times as long as the leading edge
-takes to pass the probe (its 10-90 % width over the spoke speed, 0.26 µs).
+First the probe sits at a fixed bias and records the floating potential and the saturation
+currents as the spokes pass. Then the bias is swept from $-50$ to $+25$ V and each sweep is
+fitted the standard way for $n_e$, $T_e$ and $V_p$. The sweeps last 0.1, 1 and 10 times the
+passage time of the leading edge (0.26 µs); the shortest are faster than real probes are
+swept. Short sweeps recover the true values, sweeps of the passage time resolve the
+hump but smear the edge, and long ones miss its shape.
 
-Compared: the fitted values with the background at the probe (at the middle of each sweep).
-Not compared: any measurement. The probe does not perturb the plasma, its sheath is thin and
-collisionless and does not grow with the bias (a flat ion saturation), the electrons are
-unmagnetized at the probe (here the electron Larmor radius is a third of the probe radius, which
-would lower the electron saturation current), there is no secondary emission and no RF or
-circuit effects, and sweeps 0.1 times the passage time (tens of MHz) are faster than real probes
-are swept.
+Compared: the fitted values with the background at the probe. Not compared: any measurement.
 
 Reference: the picture of spokes as rotating ionization zones with a potential hump and a sharp
 leading edge, e.g. Hecimovic and von Keudell, J. Phys. D 51 (2018) 453001. The kind of

@@ -1,33 +1,22 @@
 """PIC cost against density.
 
-How far can an explicit particle-in-cell simulation of a magnetron get? Its cost is set by
-three resolution limits. The cell size must resolve the Debye length
-$\\lambda_D = \\sqrt{\\varepsilon_0 T_e / n e^2}$ (else the grid heats the electrons) and, to
-represent the electron-scale waves and the gyration in the strong field near the cathode,
-the thermal electron gyroradius $\\rho_e = \\sqrt{m_e T_e}/(eB)$: $\\Delta x = \\min(\\lambda_D,
-\\rho_e)$. The time step must resolve the plasma oscillation, $\\omega_{pe}\\Delta t \\le 0.2$,
-and the gyration in the strongest field, $\\omega_{ce}\\Delta t \\le 0.4$. And every cell needs
-enough markers (here 100 per species) for the noise to stay below the physics.
+How far can an explicit particle-in-cell simulation of a magnetron get? Three resolution limits
+set its cost. The cell size is the smaller of the Debye length and the thermal electron
+gyroradius at the cathode; the time step resolves the plasma oscillation,
+$\\omega_{pe}\\Delta t \\le 0.2$, and the gyration in the strongest field,
+$\\omega_{ce}\\Delta t \\le 0.4$; and every cell holds 100 markers per species. The cost is
+markers × steps × the cost of one marker step (assumed: 100 ns on a CPU core, 2 ns on a GPU).
 
-The two limits on the time step cross: at the density of a DC magnetron in Boeuf's
-simulation ($2.5\\times10^{15}$ m$^{-3}$) the gyration at 120 mT sets $\\Delta t \\approx 2\\times10^{-11}$ s,
-so 20 µs take $10^6$ steps whatever the density; above about $10^{17}$ m$^{-3}$ the plasma
-frequency takes over. The cell count grows like $n^{d/2}$ in $d$ dimensions once the Debye
-length is the smaller scale, and the steps like $n^{1/2}$: at HiPIMS density
-($10^{18}$ to $10^{19}$ m$^{-3}$) the Debye length is a few µm and a 3D run of the ionization
-region is out of reach of any allocation, while a 2D slab of a few cm² is a large GPU job.
+At the density of a DC magnetron the gyration at 120 mT sets the step, and 20 µs take about
+$10^6$ steps; above about $10^{17}$ m$^{-3}$ the plasma frequency takes over. Once the Debye
+length is the smaller scale, the cells grow like $n^{d/2}$ in $d$ dimensions and the steps like
+$n^{1/2}$. At HiPIMS density ($10^{18}$ to $10^{19}$ m$^{-3}$) a 3D run of the ionization region
+is out of reach, while a 2D slab of a few cm² is a large GPU job. The domains: a 2D
+axial-azimuthal slab of 2 cm × 8 cm (Boeuf's), a 3D sector of 2 cm × 2 cm × 2 cm, and the full
+annulus of a 2-inch target.
 
-The cost is markers × steps × the cost of one marker step. That last number is an assumption
-here (100 ns on one CPU core, 2 ns on one GPU, including the deposit, gather and collisions;
-the field solve is not counted) until the benchmark studies measure it for the codes we use.
-The domains: a 2D axial-azimuthal slab of 2 cm × 8 cm (Boeuf's), a 3D sector of 2 cm × 2 cm
-× 2 cm, and the full annulus of a 2-inch target (racetrack radius 1.6 cm, 2 cm × 2 cm × 10 cm).
-
-Compared: the cell size and time step these rules give for the two published 2D cases against
-the ones their authors chose (table). Not compared: measured run times; the cost per marker
-step and the markers per cell are assumptions, implicit or energy-conserving schemes that relax
-$\\Delta x < \\lambda_D$ and $\\omega_{pe}\\Delta t < 0.2$ are not considered, nor is mesh refinement
-(which helps only where the density is low).
+Compared: the cell size and time step of the rules against those the two published 2D cases
+chose (table). Not compared: measured run times.
 
 References: Boeuf, arXiv:2211.17051 (the DC magnetron case); Charoy et al., Plasma Sources
 Sci. Technol. 28 (2019) 105010 (the axial-azimuthal benchmark).
@@ -226,11 +215,9 @@ def plot(result: dict) -> None:
     ax.legend(fontsize=7, loc="lower right")
     ax.grid(True, alpha=0.3, which="major")
     fig.caption = (
-        "The cost of simulating 20 µs against the plasma density, for the three domains, "
-        f"at T_e = {TE:g} eV and {B_CATHODE * 1e3:g} mT at the cathode: core-hours (solid, "
-        f"{CPU_SECONDS_PER_MARKER_STEP * 1e9:g} ns per marker step) and GPU-hours (dashed, "
-        f"{GPU_SECONDS_PER_MARKER_STEP * 1e9:g} ns). Shaded: the densities of DC and HiPIMS "
-        "magnetrons."
+        "The cost of simulating 20 µs against the plasma density for the three domains, "
+        f"at T_e = {TE:g} eV and {B_CATHODE * 1e3:g} mT at the cathode: core-hours (solid) "
+        "and GPU-hours (dashed). Shaded: the densities of DC and HiPIMS magnetrons."
     )
 
     fig, ax = plt.subplots(figsize=(6.4, 4.6), constrained_layout=True)
@@ -263,10 +250,9 @@ def plot(result: dict) -> None:
     ax.set_ylabel("field at the cathode B [mT]")
     fig.colorbar(image, label="log10 of the steps for 20 µs")
     fig.caption = (
-        "The time steps for 20 µs against the density and the strongest field. White line: "
-        "where the two limits are equal; above it (strong field, low density) the electron "
-        "gyration sets the step, below it the plasma frequency. Stars: the two published cases "
-        "(Charoy's at its 50 eV, the map at 5 eV)."
+        "The time steps for 20 µs against the density and the field at the cathode, with the "
+        "line where the gyration and plasma-frequency limits are equal (white) and the two "
+        "published cases (stars; Charoy's at its 50 eV, the map at 5 eV)."
     )
 
     fig, (top, bottom) = plt.subplots(

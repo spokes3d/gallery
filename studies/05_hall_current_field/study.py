@@ -1,27 +1,20 @@
 """Hall current field.
 
 In a magnetron the electrons drift around the racetrack on E×B and the ions do not, so the
-plasma carries an azimuthal current. Hecimovic and von Keudell (J. Phys. D 51, 453001, 2018)
-report that this Hall current is of the order of the Hall parameter times the discharge current
-and that it modifies the static field during a HiPIMS pulse. The question for the programme is
-whether the models can keep a fixed $B(x)$: if the field of the Hall current is a few per cent
-of the magnet's, they can; if it is a quarter, the field needs a feedback.
+plasma carries an azimuthal Hall current, of the order of the Hall parameter times the
+discharge current (Hecimovic and von Keudell 2018). Can the models keep a fixed $B(x)$? Yes if
+the field of this current is a few per cent of the magnet's; if it is a quarter, the field
+needs a feedback.
 
-Two independent estimates. First the field of the Hall current $I_H = \\mathrm{Ha}\\,I_D$ flowing
-in a torus (racetrack radius, height and minor radius below), summed from current filaments
-with the exact field of a circular loop (Biot–Savart, elliptic integrals); it is the
-perturbation of the component along the magnet's field, at the top and bottom of the torus.
-Second the momentum balance $\\delta B = \\mu_0 n e E L / B$ for a current density $n e E / B$
-over a layer of thickness $L$, which needs the density and the electric field instead of the
-current.
+Two independent estimates. The first sums the Biot–Savart field of the Hall current
+$I_H = \\mathrm{Ha}\\,I_D$ flowing in a torus over the racetrack (16 mm radius, 5 mm above the
+target, 5 mm minor radius), for the review's Hall parameters 2, 5 and 16, at the top and
+bottom of the torus. The second is the momentum balance $\\delta B = \\mu_0 n e E L / B$ for a
+current density $n e E / B$ in a layer of thickness $L$, which needs the density and the
+electric field instead of the current.
 
-Compared: the two estimates against each other, and against a magnet field of 50 to 100 mT at
-the racetrack (the range typical of the planar magnetrons in the review; not a measured field of
-a particular magnet). Not compared: a measured Hall current. The geometry (torus 16 mm radius,
-5 mm above the target, 5 mm minor radius) is an assumption, the Hall parameters 2, 5 and 16 are
-the review's HiPIMS and DC values, and the direction of the effect on the confinement
-(whether the field is pushed out above the racetrack or in) is not determined here, only its
-size.
+Compared: the two estimates with each other and with a typical magnet field of 50 to 100 mT at
+the racetrack. Not compared: a measured Hall current or field.
 
 Reference: Hecimovic and von Keudell, J. Phys. D 51 (2018) 453001 (Hall parameter, Hall current
 and discharge current).

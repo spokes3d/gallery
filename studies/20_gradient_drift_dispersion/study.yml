@@ -8,50 +8,31 @@ questions:
 - Q1
 summary: >-
   The local linear theory of the gradient-drift (Simon–Hoh) instability for DC magnetron
-  conditions: wellbalanced's local solver against the closed-form Simon–Hoh relation, then the
-  growth rate and phase speed against the wavenumber, the gradient length and the field, the
-  sign condition E·∇n > 0, and what electron collisions and warm ions change.
+  conditions, verified against closed-form relations.
 docs_preset: full
 runtime: about 3 minutes
 status: >-
-  Verifies wellbalanced's local dispersion solver (LocalDispersion) against the closed-form
-  Simon–Hoh relation: in the quasineutral, collisionless, cold-ion limit with uniform B its
-  growth rate and real frequency approach the roots of the Simon–Hoh quadratic as the
-  electron-inertia parameter ε = k_y² ρ_e² ω₀/ω_* goes to zero, with relative differences of
-  about ε/2 for the growth rate and 2ε for the real frequency (4e-5 and 2e-4 at ε = 1e-4); and it
-  agrees with Boeuf's closed-form relation, which keeps electron inertia, to 0.2 % for ε < 0.1,
-  less closely near the inertia cutoff at ε ≈ 1. The rest is an example of the local theory, not
-  a verification: it needs k_y |L_n| ≫ 1 and uniform B and E; the parameters are typical of a DC
-  magnetron, not those of a particular one; nothing is compared with experiments, and the
-  nonlocal problem across a profile and the nonlinear evolution are not addressed.
+  Verifies LocalDispersion in the Simon–Hoh limit and against Boeuf's relation; the agreement is
+  looser near the inertia cutoff (ε ≈ 1). The rest is an example of the local theory: it needs k_y
+  |L_n| ≫ 1 and uniform B and E, uses typical rather than measured parameters, and leaves out the
+  nonlocal and nonlinear problem.
 figures:
 - >-
-  Verification in the Simon–Hoh limit (quasineutral, collisionless, cold ions, uniform B = 30 mT,
-  E = 10⁴ V/m, T_e = 3 eV, L_n = 5 mm): growth rate (top) and phase speed along E×B (bottom)
-  of wellbalanced's LocalDispersion, of Boeuf's closed-form relation (with electron inertia),
-  of the Simon–Hoh quadratic and of the approximation γ ≈ k_y √(e E₀ L_n/M). Only growing modes
-  are drawn; electron inertia cuts the mode off near k_y ≈ 1800 /m.
+  Simon–Hoh limit at L_n = 5 mm: growth rate (top) and phase speed along E×B (bottom) of
+  LocalDispersion, Boeuf's relation, the Simon–Hoh quadratic and γ ≈ k_y √(e E₀ L_n/M); only
+  growing modes are drawn.
 - >-
-  Relative difference of LocalDispersion from the roots of the Simon–Hoh quadratic, for the
-  growth rate and the real frequency, against the electron-inertia parameter ε = k_y² ρ_e² ω₀/ω_*,
-  made small by raising B from 30 to 480 mT at k_y = 300 and 1000 /m; the dashed line is ε.
+  Relative difference of LocalDispersion from the Simon–Hoh roots against the electron-inertia
+  parameter ε, made small by raising B from 30 to 480 mT at k_y = 300 and 1000 /m; the dashed line
+  is ε.
 - >-
   Growth rate (top) and phase speed along E×B (bottom) against k_y with Poisson's equation, for
-  density gradient lengths of 2, 5 and 10 mm (B = 30 mT, E = 10⁴ V/m, n = 10¹⁷ m⁻³, T_e = 3 eV,
-  argon), with the Simon–Hoh quadratic (thin dashed). At long wavelength the phase speed is
-  e B |L_n|/(2M), 70 to 360 m/s; near the inertia cutoff it rises to several km/s.
+  density gradient lengths of 2, 5 and 10 mm, with the Simon–Hoh quadratic (thin dashed).
 - >-
-  The same against k_y for fields of 15, 30 and 60 mT at L_n = 5 mm: a stronger field moves the
-  inertia cutoff to shorter wavelengths and raises the long-wavelength phase speed in proportion
-  to B.
+  The same for fields of 15, 30 and 60 mT at L_n = 5 mm.
 - >-
-  Growth rate at k_y = 300 /m against E·∇n/(|E| n), the inverse density gradient length signed
-  by the direction of the field (gradient lengths 5 mm to 5 cm): the mode grows only when the
-  field and the density gradient point the same way. LocalDispersion with Poisson's equation and
-  the Simon–Hoh quadratic.
+  Growth rate at k_y = 300 /m against E·∇n/(|E| n), the inverse gradient length signed by the
+  direction of the field: LocalDispersion with Poisson's equation and the Simon–Hoh quadratic.
 - >-
-  What electron collisions (ν_e = 10⁸ and 10⁹ /s, against ω_ce = 5.3·10⁹ /s) and warm, kinetic
-  ions (T_i = 0.5 and 2 eV) change, against cold collisionless ions, at L_n = 5 mm with Poisson's
-  equation: growth rate (top) and phase speed along E×B (bottom). Collisions lower the peak and
-  remove the cutoff and shift the phase speed; warm ions barely matter, since the mode moves much
-  faster than the ion thermal speed.
+  Growth rate (top) and phase speed (bottom) with electron collisions (ν_e = 10⁸ and 10⁹ /s) and
+  with warm ions (T_i = 0.5 and 2 eV), against cold collisionless ions, at L_n = 5 mm.

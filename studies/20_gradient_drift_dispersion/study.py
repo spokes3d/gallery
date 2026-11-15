@@ -1,46 +1,30 @@
 """Gradient-drift instability.
 
 The textbook candidate for the spokes of a magnetron is the gradient-drift (Simon–Hoh)
-instability. The electrons are magnetised and drift on $\\mathbf E\\times\\mathbf B$ along the
-racetrack, the ions are not magnetised and stay behind. A density ripple along the drift makes an
-azimuthal field; its $\\mathbf E\\times\\mathbf B$ drift carries electrons up or down the density
-gradient, and the ions, accelerated by the same field, cannot keep up. The ripple grows when the
+instability: the magnetised electrons drift on $\\mathbf E\\times\\mathbf B$ along the racetrack
+while the unmagnetised ions do not, and a density ripple along the drift grows when the
 equilibrium field and the density gradient point the same way, $\\mathbf E\\cdot\\nabla n > 0$.
 
 The study solves the local (WKB) dispersion relation of wellbalanced (`LocalDispersion`), with
-electron inertia, collisions and Poisson's equation, for a plasma typical of the ionisation
-region of a DC magnetron: $B = 30$ mT, $E = 10^4$ V/m toward the target, $n = 10^{17}$ m$^{-3}$,
-$T_e = 3$ eV, argon, a density falling away from the target over $L_n$ = 2 to 10 mm. In the
-signs of the code $x$ points away from the target (so $E_0 < 0$ and $L_n = n/n' < 0$), $y$ along
-$\\mathbf E\\times\\mathbf B$, and the perturbation is $e^{i k_y y - i\\omega t}$.
-
-In the Simon–Hoh limit (uniform $B$, cold collisionless ions, quasineutrality, no electron
-inertia) the electron density follows from the $\\mathbf E\\times\\mathbf B$ convection of the
-gradient and the ion density from the ion momentum, and
+electron inertia, collisions and Poisson's equation, for the ionisation region of a DC
+magnetron: $B = 30$ mT, $E = 10^4$ V/m, $n = 10^{17}$ m$^{-3}$, $T_e = 3$ eV, argon, and a
+density gradient length $L_n$ of 2 to 10 mm ($x$ away from the target, $y$ along
+$\\mathbf E\\times\\mathbf B$, so $E_0 < 0$ and $L_n = n/n' < 0$). In the Simon–Hoh limit (cold
+collisionless ions, quasineutrality, no electron inertia) it reduces to
 $$\\omega_*\\,\\omega^2 = k_y^2 c_s^2\\,(\\omega - \\omega_0), \\qquad
 \\omega_0 = -\\frac{k_y E_0}{B}, \\quad \\omega_* = -\\frac{k_y T_e}{e B L_n}, \\quad
-c_s^2 = \\frac{T_e}{M}.$$
-For $|\\omega| \\ll \\omega_0$ this gives $\\omega^2 \\approx -k_y^2 c_s^2\\,\\omega_0/\\omega_*
-= -k_y^2\\, e E_0 L_n / M$: growth $\\gamma \\approx k_y\\sqrt{e E_0 L_n/M}$ when $E_0 L_n > 0$
-($\\mathbf E\\cdot\\nabla n > 0$) and two real roots otherwise, and the real part of the exact
-roots, $\\mathrm{Re}\\,\\omega = k_y^2 c_s^2/(2\\omega_*)$, a phase speed $e B |L_n|/(2M)$ along
-$\\mathbf E\\times\\mathbf B$ that depends neither on $E$ nor on $T_e$.
-Electron inertia, measured by $\\varepsilon = k_y^2\\rho_e^2\\,\\omega_0/\\omega_*$ ($\\rho_e$
-the electron Larmor radius), cuts the mode off near $\\varepsilon \\approx 1$, and the growth is
-fastest just below that wavenumber. In the frame of the ions the mode moves at
-$|\\omega|/k_y \\approx \\sqrt{e E_0 L_n/M} \\approx 10$ km/s here, far above their thermal
-speed, so ion Landau damping is weak and warm ions change little.
+c_s^2 = \\frac{T_e}{M},$$
+with growth $\\gamma \\approx k_y\\sqrt{e E_0 L_n/M}$. Electron inertia cuts the mode off near
+$\\varepsilon = k_y^2\\rho_e^2\\,\\omega_0/\\omega_* \\approx 1$.
 
-Compared: the solver, in the quasineutral collisionless cold-ion limit, against the roots of
-the quadratic above, against $\\gamma \\approx k_y\\sqrt{e E_0 L_n/M}$, and against Boeuf's
-closed-form relation (`boeuf_dispersion_roots`, which keeps electron inertia through
-$a = k_y^2\\rho_e^2$); the difference from the quadratic is followed as the electron-inertia
-parameter $\\varepsilon = k_y^2\\rho_e^2\\,\\omega_0/\\omega_*$ is made small by raising $B$.
-Then, with Poisson's equation, the growth rate and phase speed against $k_y$ for three gradient
-lengths and three fields, the growth rate across the sign of $\\mathbf E\\cdot\\nabla n$, and
-what electron collisions and warm (kinetic) ions change. Not compared: experiments, the
-nonlocal problem across a profile (the local relation needs $k_y |L_n| \\gg 1$), gradients of
-$B$ or $E$, and anything nonlinear.
+The figures show the growth rate and phase speed against $k_y$ for three gradient lengths and
+three fields, the growth rate across the sign of $\\mathbf E\\cdot\\nabla n$, and the effect of
+electron collisions and warm ions.
+
+Compared: the solver in the Simon–Hoh limit against the roots of the quadratic, which it
+approaches as $\\varepsilon \\to 0$ (relative difference about $\\varepsilon/2$ in the growth
+rate), and against Boeuf's closed-form relation with electron inertia (within 0.2 % for
+$\\varepsilon < 0.1$).
 
 Reference: A. Simon, Phys. Fluids 6, 382 (1963) and F. C. Hoh, Phys. Fluids 6, 1184 (1963)
 for the instability; Boeuf's local relation is Eq. (1) of J.-P. Boeuf, arXiv:2211.17051.
