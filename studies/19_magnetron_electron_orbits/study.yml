@@ -1,0 +1,43 @@
+# Read by gallery-tools without running the script (see the Adding a study guide).
+category: Basics
+kind: verification
+public: true
+codes:
+- mpiparticles
+- plasmacoll
+ladder: outside the ladder (basics)
+questions: []
+summary: >-
+  Single electrons in the field of a planar magnetron, Boris-pushed: gyration, mirror bounce in the
+  arch and the drift around the racetrack, against the guiding-centre formulas.
+docs_preset: full
+runtime: about a minute (full); seconds (smoke)
+status: >-
+  Verifies the full-orbit push (mpiparticles' compiled Boris scheme) against the guiding-centre theory
+  of a textbook: the measured bounce periods and azimuthal drift speeds of magnetized electrons, over
+  scans of the energy (1 to 50 eV) and of the pitch angle (20 to 88 degrees), all of them reflected
+  above the cathode sheath. The fields are assumed, not computed: the magnet field is that of an
+  assumed 2-inch balanced magnetron without yoke, and the electric field is a prescribed E_z(z) (a 300
+  V, 1 mm sheath and a 2 kV/m presheath), not a solution of Poisson's equation. No collisions, no
+  self-consistency, and the theory is not tested for electrons that enter the sheath.
+figures:
+- >-
+  Three electrons in the (r, z) plane over their first 120 ns, on the field line with its apex 4 mm
+  above the target (dashed): a 5 eV electron with a large pitch angle makes short bounces near the
+  bottom of its well, a 5 eV one with a pitch angle of 30 degrees bounces along most of the arch, and a
+  30 eV one with 30 degrees reaches the cathode sheath (grey), where the sheath field reflects it.
+- >-
+  The guiding centres of the same electrons seen from above, over their first turn around the axis
+  (a dot marks the start), with the radii of the magnets (dotted): each bounce moves the guiding
+  centre in and out along the arch while it drifts around the axis, clockwise, in the direction of
+  E×B. A turn takes about 1.5 µs at 5 eV and less at 30 eV, where the grad-B and curvature drifts add
+  to E×B.
+- >-
+  Azimuthal drift (angular speed) against the kinetic energy at a pitch angle of 75 degrees: the
+  Boris push (dots) against the bounce-averaged guiding-centre drifts, E×B alone, with the grad-B
+  drift, and with the curvature drift. E×B dominates below a few eV, the grad-B drift above.
+- >-
+  Bounce period (top) and azimuthal drift (bottom) against the pitch angle at the bottom of the well,
+  for 5 eV electrons: the Boris push (dots) against the guiding-centre period, the harmonic period
+  2π (m/U'')^½ of small bounces, and the bounce-averaged drifts. Smaller pitch angles bounce further
+  along the arch, through a stronger curvature.

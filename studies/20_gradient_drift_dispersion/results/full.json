@@ -1,0 +1,52 @@
+{
+  "preset": "full",
+  "wall_seconds": 166.8,
+  "ran_at": "2026-11-15T15:35:50+00:00",
+  "python": "3.13.18",
+  "codes": {
+    "beamtracer": {
+      "version": "0.1.0",
+      "commit": "442f8955bf"
+    },
+    "byob": {
+      "version": "0.1.0",
+      "commit": "b348683e45"
+    },
+    "cunumpy": {
+      "version": "0.7.2",
+      "commit": "159a7128ba"
+    },
+    "freeofcharge": {
+      "version": "0.1.0",
+      "commit": "a3d2deb53c"
+    },
+    "mpifield": {
+      "version": "0.1.0",
+      "commit": "6b633102ff"
+    },
+    "mpiparticles": {
+      "version": "0.1.0",
+      "commit": "4cc5a65abb"
+    },
+    "picnic": {
+      "version": "0.1",
+      "commit": "54a7cafc36"
+    },
+    "plasma-plots": {
+      "version": "0.2.5",
+      "commit": "4cbf1f2cdc"
+    },
+    "plasmacoll": {
+      "version": "0.5.0",
+      "commit": "528dd45539"
+    },
+    "simgeometry": {
+      "version": "0.2.1",
+      "commit": "5ac67477bc"
+    },
+    "wellbalanced": {
+      "version": "0.1.0",
+      "commit": "d044558e64"
+    }
+  }
+}

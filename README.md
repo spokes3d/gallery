@@ -11,6 +11,11 @@ Site: <https://spokes3d.github.io/gallery/>
 | [Rotating-spoke test ions](https://spokes3d.github.io/gallery/studies/rotating-spoke-test-ions/) | example | byob, mpifield, mpiparticles, plasmacoll |
 | [Langmuir probe in spokes](https://spokes3d.github.io/gallery/studies/spoke-langmuir-probe/) | example | byob, plasmacoll |
 | [PIC cost against density](https://spokes3d.github.io/gallery/studies/pic-cost-hipims/) | example | none |
+| [Magnetron magnetic field](https://spokes3d.github.io/gallery/studies/magnetron-field/) | example | none |
+| [Magnetron electron orbits](https://spokes3d.github.io/gallery/studies/magnetron-electron-orbits/) | verification | mpiparticles, plasmacoll |
+| [Gradient-drift instability](https://spokes3d.github.io/gallery/studies/gradient-drift-dispersion/) | verification | wellbalanced, plasmacoll |
+| [Magnetron plasma parameters](https://spokes3d.github.io/gallery/studies/magnetron-plasma-parameters/) | example | plasmacoll, plasma-plots |
+| [Cathode sheath](https://spokes3d.github.io/gallery/studies/cathode-sheath/) | example | byob, plasmacoll |
 
 ## Running a study
 

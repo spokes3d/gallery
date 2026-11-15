@@ -1,0 +1,40 @@
+# Read by gallery-tools without running the script (see the Adding a study guide).
+category: Basics
+kind: example
+public: true
+codes: []
+ladder: outside the ladder (basics)
+questions: []
+summary: >-
+  The magnetic field of a circular 2-inch planar magnetron, from the exact field of current loops:
+  the arch, the racetrack, the magnetic mirror, and balanced against unbalanced magnets.
+docs_preset: full
+runtime: about 10 seconds
+status: >-
+  Textbook material, not a model of a particular magnetron and not a verification against a
+  measurement. The magnets (NdFeB, 1.2 T, their sizes and their depth below the target) are assumed,
+  typical of a 2-inch magnetron; there is no iron yoke, which in a real source strengthens the field,
+  so the field values are indicative only. The field itself is exact for uniformly magnetized magnets
+  (loops with elliptic integrals, Gauss-Legendre over the height), and the traced field lines keep the
+  flux function constant to round-off.
+figures:
+- >-
+  Field lines (contours of the flux function, white) and |B| above the target of the balanced
+  magnetron. The coloured bars on the target face mark the radii of the centre magnet and of the ring, which lie 8 mm below it. The
+  field lines arch from the centre pole to the ring; the dashed line joins their apexes (B_z = 0),
+  and it meets the target at the racetrack.
+- >-
+  The radial (top) and axial (bottom) field on the target surface for the two magnet sets. The
+  racetrack is where B_z changes sign (grey lines): there the field is parallel to the target. The
+  radial field peaks further in, above the edge of the centre magnet.
+- >-
+  |B| along field lines of the balanced magnetron with apexes 1, 2, 4 and 6 mm above the racetrack,
+  against the arc length from the apex, and the unbalanced line with its apex at 2 mm (dashed). The
+  field rises towards both feet, strongly on the inner (centre-pole) side and weakly on the outer
+  side: a magnetic mirror with unequal ends.
+- >-
+  Balanced (top) against unbalanced (bottom), up to 60 mm above the target: field lines (white) over
+  log10 |B|, and the separatrix psi = 0 (thick line). In the balanced set the field lines close on the
+  target. In the unbalanced one the ring carries 2.2 times the flux of the centre: the axis has a null
+  (cross) 27 mm above the target, and the field lines outside the separatrix leave towards the
+  substrate.

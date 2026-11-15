@@ -35,16 +35,27 @@ figures:
   0.3 ns): each bounces radially in the well about every 13 ns while it drifts clockwise around the
   racetrack at about 100 km/s, ten times faster than the spokes, and crosses them.
 - >-
-  The ionization events of the test electrons around four instants of the period, in the lab
-  frame, with the 0 V and 6 V contours of the potential: the ionization zones turn with the
-  spokes.
+  The ionization events of the test electrons around the first two of four instants of the period,
+  in the lab frame, with the 0 V and 6 V contours of the potential: the ionization zones turn with
+  the spokes.
+- >-
+  The ionization events around the last two of the four instants, on the same colour scale: the
+  ionization zones have turned further with the spokes.
 - >-
   The same four electrons over the whole 0.8 µs in the spoke frame, over the potential (a dot marks
   where each starts): their paths through the well and across the spokes.
 - >-
-  Period averages over the whole plane in the spoke frame, with the 0 V and 6 V contours of the potential:
-  the ionization, the electron density, the mean electron energy and the cross-field electron flux to the
-  anode.
+  The ionization averaged over the period over the whole plane in the spoke frame, with the 0 V and
+  6 V contours of the potential.
+- >-
+  The electron density averaged over the period in the spoke frame, with the same contours of the
+  potential.
+- >-
+  The mean electron energy averaged over the period in the spoke frame, with the same contours of the
+  potential.
+- >-
+  The cross-field electron flux to the anode averaged over the period in the spoke frame, with the
+  same contours of the potential.
 - >-
   Azimuthal profiles at the racetrack in the spoke frame, averaged over the period and normalized:
   the potential, the mean electron energy, the ionization rate and the cross-field electron flux to

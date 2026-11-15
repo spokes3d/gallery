@@ -28,18 +28,20 @@ status: >-
 figures:
 - >-
   A probe at a fixed bias at three points (3 mm inside the racetrack, on it, 1.5 mm outside it) over two
-  periods of the pattern. Top left: the true plasma potential (solid) and the floating potential (dashed):
-  the floating potential falls as a spoke arrives, since the hotter electrons charge the tip more
-  negatively, so it moves against the plasma potential. Top right and bottom left: the electron
-  temperature and density at the probe. Bottom right: the ion saturation current (solid) and the
+  periods of the pattern. First panel: the true plasma potential (solid) and the floating potential
+  (dashed): the floating potential falls as a spoke arrives, since the hotter electrons charge the tip
+  more negatively, so it moves against the plasma potential. Second and third panels: the electron
+  temperature and density at the probe. Last panel: the ion saturation current (solid) and the
   electron saturation current at the plasma potential (dashed, unmagnetized: an upper bound).
 - >-
-  Sweeps of the bias on the racetrack centred between the spokes, on a leading edge and inside a spoke,
-  0.1 times (blue) and 10 times (red) as long as the edge takes to pass. Left: the probe current; right:
-  the electron current (the ion line removed) on a log scale with the two fitted lines, the fitted
-  plasma potential at their knee (dotted) and the true one (dashed). The short sweeps give the true
-  temperature and plasma potential; the long ones see the plasma change while the bias goes up, and
-  their characteristics bend and break.
+  Sweeps of the bias on the racetrack centred between the spokes, on a leading edge and inside a spoke
+  (top to bottom), 0.1 times (blue) and 10 times (red) as long as the edge takes to pass: the probe
+  current, with the true plasma potential (dashed).
+- >-
+  The same sweeps: the electron current (the ion line removed) on a log scale with the two fitted lines,
+  the fitted plasma potential at their knee (dotted) and the true one (dashed). The short sweeps give the
+  true temperature and plasma potential; the long ones see the plasma change while the bias goes up,
+  and their characteristics bend and break.
 - >-
   The fitted density, electron temperature and plasma potential on the racetrack against time, each
   sweep a step over the time it takes, for sweeps 0.1, 1 and 10 times the passage time of the leading
