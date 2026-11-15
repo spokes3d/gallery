@@ -26,16 +26,21 @@ status: >-
 figures:
 - >-
   The rotating spokes over one period of the pattern in the lab frame (press Play, or drag the
-  slider): the plasma potential, three spokes on the racetrack moving clockwise at 10 km/s, and
-  600 of the test electrons coloured by kinetic energy. The pattern turns by a third of a turn
+  slider): the plasma potential, three spokes on the racetrack moving clockwise at 10 km/s,
+  1500 of the test electrons coloured by kinetic energy, and the trails of eight followed electrons. The pattern turns by a third of a turn
   per period, so the last frame looks like the first one.
 - >-
   The ionization events of the test electrons around four instants of the period, in the lab
   frame, with the 0 V and 6 V contours of the potential: the ionization zones turn with the
   spokes.
 - >-
-  The ionization events of the whole period in the spoke frame, with the potential contours: the ionization
-  zone of each spoke.
+  Four of the followed electrons over the first quarter of the period, in the spoke frame where the
+  pattern stands still, over the potential (a dot marks where each starts): they bounce radially in the
+  well, drift around the racetrack with the Hall drift and cross the spokes.
+- >-
+  Period averages over the whole plane in the spoke frame, with the 0 V and 6 V contours of the potential:
+  the ionization, the electron density, the mean electron energy and the cross-field electron flux to the
+  anode.
 - >-
   Azimuthal profiles at the racetrack in the spoke frame, averaged over the period and normalized:
   the potential, the mean electron energy, the ionization rate and the cross-field electron flux to
