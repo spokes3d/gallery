@@ -9,6 +9,7 @@ Site: <https://spokes3d.github.io/gallery/>
 | [Hall current field](https://spokes3d.github.io/gallery/studies/hall-current-field/) | example | none |
 | [Rotating-spoke test electrons](https://spokes3d.github.io/gallery/studies/rotating-spoke-test-electrons/) | example | byob, mpifield, mpiparticles, plasmacoll |
 | [Rotating-spoke test ions](https://spokes3d.github.io/gallery/studies/rotating-spoke-test-ions/) | example | byob, mpifield, mpiparticles, plasmacoll |
+| [Langmuir probe in spokes](https://spokes3d.github.io/gallery/studies/spoke-langmuir-probe/) | example | byob, plasmacoll |
 | [PIC cost against density](https://spokes3d.github.io/gallery/studies/pic-cost-hipims/) | example | none |
 
 ## Running a study
