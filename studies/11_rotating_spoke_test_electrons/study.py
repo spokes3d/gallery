@@ -75,7 +75,7 @@ N_SHOW = 3000  # markers kept per frame for the figures
 N_BINS = 180  # azimuthal bins
 SNAPSHOTS = 4
 MOVIE_FRAMES = 30  # frames of the animation over the recorded period
-MOVIE_MARKERS = 600  # markers per frame of the animation
+MOVIE_MARKERS = 1500  # markers per frame of the animation
 
 
 def spoke_shape(theta):
@@ -328,15 +328,19 @@ def run(preset: str) -> dict:
 
 
 def compact(full: dict) -> dict:
-    """The result for the cache: four snapshots instead of every frame."""
+    """The result for the cache: four ionization snapshots and the frames of the animation."""
     frames = full["frames"]
     picks = np.linspace(0, len(frames), SNAPSHOTS, endpoint=False).astype(int)
     window = max(1, len(frames) // 24)
     snapshots = []
     for i in picks:
         around = [frames[j % len(frames)] for j in range(i - window, i + window + 1)]
+        # the ionization around the instant (the markers are in the animation)
         snapshots.append(
-            {**frames[i], "ion": np.mean([f["ion"] for f in around], axis=0)}
+            {
+                "t": frames[i]["t"],
+                "ion": np.mean([f["ion"] for f in around], axis=0),
+            }
         )
     # the ionization maps relative to their common maximum (arbitrary units), in half precision
     peak = max(float(s["ion"].max()) for s in snapshots) or 1.0
@@ -427,7 +431,7 @@ def animate(result: dict):
     extent = (-L * 100, L * 100, -L * 100, L * 100)
     fig, ax = plt.subplots(figsize=(6.4, 5.2), constrained_layout=True)
     image = ax.imshow(
-        potential_lab(result, movie[0]["t"])[::2, ::2].T,
+        potential_lab(result, movie[0]["t"]).T,
         origin="lower",
         extent=extent,
         cmap="cividis",
@@ -454,7 +458,7 @@ def animate(result: dict):
 
     def update(i):
         frame = movie[i]
-        image.set_data(potential_lab(result, frame["t"])[::2, ::2].T)
+        image.set_data(potential_lab(result, frame["t"]).T)
         dots.set_offsets(
             np.c_[frame["x"].astype(float), frame["y"].astype(float)] * 100
         )
