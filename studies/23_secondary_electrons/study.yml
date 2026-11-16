@@ -1,0 +1,39 @@
+# Read by gallery-tools without running the script (see the Adding a study guide).
+category: Basics
+kind: example
+public: true
+codes:
+- mpiparticles
+- plasmacoll
+ladder: outside the ladder (basics)
+questions: []
+summary: >-
+  Secondary electrons from the target of a planar magnetron, followed through the sheath and the
+  magnetic trap with argon collisions: how many are recaptured and how many ions the others make.
+docs_preset: full
+runtime: about 5 minutes (full); seconds (smoke)
+status: >-
+  Verifies that the Monte Carlo collisions give the probability of colliding before the first
+  return that the path integral along the collisionless orbits gives, and that the push keeps the
+  total energy of the free orbits to about 1 eV of 300. The fields are assumed (the magnet field of
+  the electron-orbit study and a prescribed sheath and presheath, not a solution of Poisson's
+  equation), the cross sections are rough stand-ins, the electrons do not heat in the presheath and
+  the emission energies and radii are assumed. The ions per electron are therefore indicative.
+figures:
+- >-
+  Three secondary electrons without collisions, from their emission to their return to the
+  target, in the (r, z) plane: the 10 %, 50 % and 85 % quantiles of the return time.
+- >-
+  Fraction of the secondary electrons back at the target against the time since their emission,
+  without collisions.
+- >-
+  Fraction of the electrons that collide before their first return to the target against the
+  argon pressure: the Monte Carlo collisions (dots) against the path integral along the
+  collisionless orbits (line).
+- >-
+  The fate of the secondary electrons against the argon pressure: recaptured without a
+  collision, back at the target after collisions, cooled below the ionization threshold, left the
+  domain, or still in the trap at the end of the run.
+- >-
+  Ionizations and excitations per emitted secondary electron, its offspring included, against the
+  argon pressure, with the sheath voltage over an energy cost of 30 eV per ion.

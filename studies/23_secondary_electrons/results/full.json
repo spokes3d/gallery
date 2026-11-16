@@ -1,0 +1,24 @@
+{
+  "preset": "full",
+  "wall_seconds": 196.8,
+  "ran_at": "2026-11-16T01:44:59+00:00",
+  "python": "3.12.3",
+  "codes": {
+    "cunumpy": {
+      "version": "0.7.2",
+      "commit": "159a712"
+    },
+    "mpiparticles": {
+      "version": "0.1.0",
+      "commit": "95e0619"
+    },
+    "plasma-plots": {
+      "version": "0.2.5",
+      "commit": "4cbf1f2"
+    },
+    "plasmacoll": {
+      "version": "0.5.0",
+      "commit": "528dd45"
+    }
+  }
+}

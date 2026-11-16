@@ -16,6 +16,7 @@ Site: <https://spokes3d.github.io/gallery/>
 | [Gradient-drift instability](https://spokes3d.github.io/gallery/studies/gradient-drift-dispersion/) | verification | wellbalanced, plasmacoll |
 | [Magnetron plasma parameters](https://spokes3d.github.io/gallery/studies/magnetron-plasma-parameters/) | example | plasmacoll, plasma-plots |
 | [Cathode sheath](https://spokes3d.github.io/gallery/studies/cathode-sheath/) | example | byob, plasmacoll |
+| [Secondary electrons](https://spokes3d.github.io/gallery/studies/secondary-electrons/) | example | mpiparticles, plasmacoll |
 
 ## Running a study
 

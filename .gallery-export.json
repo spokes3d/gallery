@@ -1,6 +1,6 @@
 {
   "source": "spokes3d/gallery-private",
-  "commit": "6467710df15b7ee87d7a7007a9cc335f1a0dac45",
+  "commit": "65f8dcc5207714bafc7a7a03cf743aabdfdd5b31",
   "studies": [
     "05_hall_current_field",
     "11_rotating_spoke_test_electrons",
@@ -11,6 +11,7 @@
     "19_magnetron_electron_orbits",
     "20_gradient_drift_dispersion",
     "21_magnetron_plasma_parameters",
-    "22_cathode_sheath"
+    "22_cathode_sheath",
+    "23_secondary_electrons"
   ]
 }
