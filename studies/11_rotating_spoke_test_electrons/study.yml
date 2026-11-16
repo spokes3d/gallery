@@ -5,7 +5,7 @@ public: true
 codes:
 - byob
 - mpifield
-- mpiparticles
+- picnic
 - plasmacoll
 ladder: outside the ladder (test particles in a prescribed spoke)
 questions:

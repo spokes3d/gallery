@@ -7,8 +7,8 @@ Site: <https://spokes3d.github.io/gallery/>
 | Study | Kind | Codes |
 |---|---|---|
 | [Hall current field](https://spokes3d.github.io/gallery/studies/hall-current-field/) | example | none |
-| [Rotating-spoke test electrons](https://spokes3d.github.io/gallery/studies/rotating-spoke-test-electrons/) | example | byob, mpifield, mpiparticles, plasmacoll |
-| [Rotating-spoke test ions](https://spokes3d.github.io/gallery/studies/rotating-spoke-test-ions/) | example | byob, mpifield, mpiparticles, plasmacoll |
+| [Rotating-spoke test electrons](https://spokes3d.github.io/gallery/studies/rotating-spoke-test-electrons/) | example | byob, mpifield, picnic, plasmacoll |
+| [Rotating-spoke test ions](https://spokes3d.github.io/gallery/studies/rotating-spoke-test-ions/) | example | byob, mpifield, picnic, plasmacoll |
 | [Langmuir probe in spokes](https://spokes3d.github.io/gallery/studies/spoke-langmuir-probe/) | example | byob, plasmacoll |
 | [PIC cost against density](https://spokes3d.github.io/gallery/studies/pic-cost-hipims/) | example | none |
 | [Magnetron magnetic field](https://spokes3d.github.io/gallery/studies/magnetron-field/) | example | none |
