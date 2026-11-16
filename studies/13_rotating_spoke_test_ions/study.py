@@ -8,8 +8,8 @@ $E_z = -3$ kV/m towards the target.
 
 Ar$^+$ test ions are born with the background's ionization rate $n_e\\,k_{iz}(T_e)$, which peaks
 just behind the leading edge of each spoke, at a random height between the cathode sheath edge
-and the anode plane. They are Boris-pushed (mpiparticles) through the rotating field gathered by
-byob and collide with argon at 0.5 Pa (plasmacoll's Monte Carlo
+and the anode plane. They are test particles of picnic's `Vlasov` model: Boris-pushed through
+the rotating field gathered by byob, colliding with argon at 0.5 Pa (plasmacoll's Monte Carlo
 collisions with Phelps' cross sections, including resonant charge exchange). Each ion is
 followed until it reaches the cathode sheath edge (the target), the anode plane or the outer
 edge.
@@ -172,130 +172,149 @@ def sample_births(background, weights, rng, count, t):
 
 
 def run(preset: str) -> dict:
-    """Inject, push and collide the ions until all have left; return their fates."""
-    from mpiparticles import ParticleStore, boris_push
+    """Inject, push and collide the ions (picnic's Vlasov) until all have left."""
+    import astropy.units as u
+    from picnic.models.vlasov import Vlasov
+    from picnic.parameters import GridParams, VlasovConfig
+    from picnic.parameters.bc_params import ParticleBCs, ParticleBoundaryCondition
+    from picnic.particles.species_collection import Particles
+    from picnic.particles.wall_hits import wall_label
+    from simgeometry import GeometryCollection
+    from simgeometry.objects.slanted_tube import SlantedTube
 
     size = PRESETS[preset]
     rng = np.random.default_rng(0)
     background = build_background()
     birth_weights = ionization_rate(background)
-    mcc = collisions()
-    store = ParticleStore(ndim=3, nvel=3)
+
+    # every face absorbs: the cathode sheath edge (the target) at -LZ, the anode plane at
+    # +LZ, and the outer edge, a cylinder at R_EDGE (a straight tube: analytic crossings)
+    kill = ParticleBoundaryCondition("kill")
+    config = VlasovConfig(
+        grid=GridParams(
+            ndim=3,
+            nvel=3,
+            num_gridpoints=(5, 5, 5),
+            lower_bound=(-L, -L, -LZ),
+            upper_bound=(L, L, LZ),
+            coordinates="cartesian",
+            domain_decomposition=(False, False, False),
+        ),
+        bcs_particles=ParticleBCs(kill, kill, kill, kill, kill, kill),
+        dt=DT,
+    )
+    edge = SlantedTube((0, 0, -2 * LZ), (0, 0, 2 * LZ), R_EDGE, 1.5 * L, (0, 0, 1))
+    model = Vlasov(
+        config,
+        e_field=lambda positions, t: e_field(background, positions.T, t).T,
+        b_field=lambda positions: b_field(positions[:, 0], positions[:, 1]).T,
+        fields_on_grid=False,
+        collisions=collisions(),
+        surfaces=GeometryCollection([edge]),
+    )
+    ions = Particles(
+        "Ar+",
+        name="Ar+",
+        number_density=0.0 / u.m**3,
+        temperature=0.0 * u.eV,
+        macroparticle_weight=1.0,
+        injection_method="manual",
+        ndim=3,
+        nvel=3,
+    )
+    ions.set_pusher_args(model.domain.grid)
+    model.particles.add(ions)
+    markers = ions.markers
 
     total = size["ions"]
     n_inject = int(round(size["born"] * PERIOD / DT))
     per_step = np.diff(np.round(np.linspace(0, total, n_inject + 1)).astype(int))
-    # per ion: birth (spoke frame), its fate and what it carries when it leaves
+    # per ion, by its marker id: where (spoke frame) and when it was born
+    first_id = markers.next_marker_id
     birth = np.zeros((total, 3))
-    fate = np.full(total, -1, dtype=np.int8)
-    energy = np.full(total, np.nan)
-    incidence = np.full(total, np.nan)
-    arrival = np.full(total, np.nan)
-    lifetime = np.full(total, np.nan)
-    shift = np.full(total, np.nan)  # azimuthal displacement in the lab frame [rad]
-    radial = np.full(total, np.nan)  # radial displacement [m]
     born_at = np.zeros(total)
     born_lab = np.zeros(total)  # the lab-frame angle of birth
-    counts = {"ar_ion_isotropic": 0, "ar_ion_backscatter": 0}
+
+    class Births:
+        """The ions born in each step, from the ionization rate (a picnic source)."""
+
+        def inject(self, species, dt):
+            step = model.iteration
+            k = per_step[step] if step < n_inject else 0
+            if not k:
+                return 0
+            points, positions, velocities = sample_births(
+                background, birth_weights, rng, k, model.time
+            )
+            index = markers.next_marker_id - first_id + np.arange(k)
+            species.append_markers((positions, velocities))
+            birth[index, :2] = points
+            birth[index, 2] = positions[2]
+            born_at[index] = model.time
+            born_lab[index] = np.arctan2(positions[1], positions[0])
+            return k
+
+    model.add_particle_source("Ar+", Births())
     frame_every = max(1, int(round(PERIOD / DT / size["frames"])))
     first_frame = max(0, n_inject - size["frames"] * frame_every)
     movie = []
-    born = 0
-    t = 0.0
     start = time.time()
     for step in range(n_inject + MAX_STEPS):
-        if step < n_inject and per_step[step]:
-            k = per_step[step]
-            points, positions, velocities = sample_births(
-                background, birth_weights, rng, k, t
+        if step >= n_inject and markers.num_alive == 0:
+            break
+        model.step()
+        if (
+            step >= first_frame
+            and (step - first_frame) % frame_every == 0
+            and len(movie) < size["frames"]
+        ):
+            n = markers.current_length
+            live = np.flatnonzero(markers.alive[:n])
+            show = rng.choice(live, size=min(MOVIE_MARKERS, live.size), replace=False)
+            vs = markers.velocities[:, show]
+            movie.append(
+                {
+                    "t": model.time,
+                    "x": markers.positions[0, show].astype(np.float16),
+                    "y": markers.positions[1, show].astype(np.float16),
+                    "energy": (0.5 * AR_MASS * np.sum(vs * vs, axis=0) / QE).astype(
+                        np.float16
+                    ),
+                    "alive": int(live.size),
+                }
             )
-            ids = store.add(positions, velocities)
-            birth[ids, :2] = points
-            birth[ids, 2] = positions[2]
-            born_at[ids] = t
-            born_lab[ids] = np.arctan2(positions[1], positions[0])
-            born += k
-        n = store.length
-        if store.num_alive == 0:
-            if step >= n_inject:
-                break
-            t += DT
-            continue
-        p, v, alive = store.positions[:, :n], store.velocities[:, :n], store.alive[:n]
-        e = e_field(background, p, t + 0.5 * DT)
-        boris_push(store, e, b_field(p[0], p[1]), DT, QE / AR_MASS)
-        t += DT
-
-        index = np.flatnonzero(alive)
-        velocities = np.ascontiguousarray(v[:, index].T)
-        result = mcc.collide(
-            "Ar+",
-            np.ascontiguousarray(p[:2, index].T),
-            velocities,
-            np.ones(index.size),
-            DT,
-            in_place=True,
-        )
-        v[:, index] = velocities.T
-        for name, value in result.diagnostics.counts.items():
-            counts[name] = counts.get(name, 0) + value
-
-        ids = store.ids[:n]
-        leaving = {
-            0: (p[2] < -LZ) & alive,
-            1: (p[2] > LZ) & alive,
-            2: (np.hypot(p[0], p[1]) > R_EDGE) & alive,
-        }
-        dead = np.zeros(n, bool)
-        for code, mask in leaving.items():
-            if not mask.any():
-                continue
-            mask &= ~dead
-            which = ids[mask]
-            speed2 = np.sum(v[:, mask] ** 2, axis=0)
-            fate[which] = code
-            energy[which] = 0.5 * AR_MASS * speed2 / QE
-            incidence[which] = np.degrees(
-                np.arccos(np.clip(np.abs(v[2, mask]) / np.sqrt(speed2), 0, 1))
-            )
-            arrival[which] = spoke_angle(p[0, mask], p[1, mask], t)
-            lifetime[which] = t - born_at[which]
-            radial[which] = np.hypot(p[0, mask], p[1, mask]) - np.hypot(
-                *birth[which, :2].T
-            )
-            shift[which] = np.angle(
-                np.exp(1j * (np.arctan2(p[1, mask], p[0, mask]) - born_lab[which]))
-            )
-            dead |= mask
-        if dead.any():
-            store.deactivate(dead)
-        store.compact_if_needed()
-
-        if step >= first_frame and (step - first_frame) % frame_every == 0:
-            if len(movie) < size["frames"]:
-                n = store.length
-                live = np.flatnonzero(store.alive[:n])
-                show = rng.choice(
-                    live, size=min(MOVIE_MARKERS, live.size), replace=False
-                )
-                vs = store.velocities[:, show]
-                movie.append(
-                    {
-                        "t": t,
-                        "x": store.positions[0, show].astype(np.float16),
-                        "y": store.positions[1, show].astype(np.float16),
-                        "energy": (0.5 * AR_MASS * np.sum(vs * vs, axis=0) / QE).astype(
-                            np.float16
-                        ),
-                        "alive": int(live.size),
-                    }
-                )
         if step % 200 == 0:
             print(
-                f"step {step}  t = {t * 1e6:.2f} us  born {born}  inside {store.num_alive}  "
-                f"{time.time() - start:.0f} s"
+                f"step {step}  t = {model.time * 1e6:.2f} us  "
+                f"inside {markers.num_alive}  {time.time() - start:.0f} s"
             )
 
+    # the fates, from the wall hits: target (the -z face), substrate (+z), edge (the rest)
+    hits = model.wall_hits.get("Ar+")
+    fate = np.full(total, -1, dtype=np.int8)
+    energy, incidence, arrival, lifetime, shift, radial = (
+        np.full(total, np.nan) for _ in range(6)
+    )
+    if hits is not None and len(hits):
+        which = hits.marker_id - first_id
+        p, v = hits.position, hits.velocity
+        fate[which] = np.where(
+            hits.wall == wall_label(2, "min"),
+            0,
+            np.where(hits.wall == wall_label(2, "max"), 1, 2),
+        )
+        speed2 = np.sum(v**2, axis=1)
+        energy[which] = 0.5 * AR_MASS * speed2 / QE
+        incidence[which] = np.degrees(
+            np.arccos(np.clip(np.abs(v[:, 2]) / np.sqrt(speed2), 0, 1))
+        )
+        arrival[which] = spoke_angle(p[:, 0], p[:, 1], hits.time)
+        lifetime[which] = hits.time - born_at[which]
+        radial[which] = np.hypot(p[:, 0], p[:, 1]) - np.hypot(*birth[which, :2].T)
+        shift[which] = np.angle(
+            np.exp(1j * (np.arctan2(p[:, 1], p[:, 0]) - born_lab[which]))
+        )
+    born = int(per_step.sum())
     sample = background.sample(resolution=NMAP)
     # the birth distribution on the map grid, relative to its maximum
     births, _, _ = np.histogram2d(
@@ -313,7 +332,11 @@ def run(preset: str) -> dict:
         "radial": radial,
         "birth": birth,
         "births_map": births,
-        "counts": counts,
+        "counts": {
+            "ar_ion_isotropic": 0,
+            "ar_ion_backscatter": 0,
+            **model.monte_carlo_collision_counts,
+        },
         "movie": movie,
         "axis": sample["x"].values,
         "potential": sample["potential"].values.astype(np.float32),

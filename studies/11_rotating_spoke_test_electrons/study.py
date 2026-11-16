@@ -9,10 +9,12 @@ tail, with hotter electrons inside (3 eV outside, up to 7 eV). The pattern rotat
 
 The magnetic field is radial, 30 mT at $R_0$, and a uniform axial field $E_z = -3$ kV/m drives
 the Hall drift. The azimuthal field of a spoke adds an axial drift $E_\\theta \\times B_r$, so
-there the electrons cross the magnetic field towards the anode. The electrons are Boris-pushed
-(mpiparticles) through the field gathered by byob and collide with argon at 0.5 Pa (plasmacoll's
-Monte Carlo collisions: elastic, excitation, ionization). Those that reach the anode plane are
-counted as the cross-field current. The run records one period of the pattern (6.3 µs).
+there the electrons cross the magnetic field towards the anode. The electrons are test
+particles of picnic's `Vlasov` model: Boris-pushed through the field gathered by byob, colliding
+with argon at 0.5 Pa (plasmacoll's Monte Carlo collisions: elastic, excitation, ionization),
+kept at a fixed number by a source that draws from the background. Those that reach the anode
+plane are counted as the cross-field current. The run records one period of the pattern
+(6.3 µs).
 
 `python studies/11_rotating_spoke_test_electrons/study.py --movie spoke.mp4` also writes a movie
 (needs ffmpeg).
@@ -127,16 +129,12 @@ def e_field(background, positions, t):
 
 def sample_electrons(background, rng, count, t):
     """Positions from the density, Maxwellian velocities at the local Te plus the E x B drift."""
+    from picnic.particles.refill_source import sample_background
     from plasmacoll.constants import ELECTRON_MASS
 
-    density = background.bulk["density"].ravel()
-    nodes = rng.choice(density.size, size=count, p=density / density.sum())
-    points = background.grid.points().T[nodes]
-    points = points + (rng.random(points.shape) - 0.5) * background.grid.spacing
-    te = background.evaluate(points)["electron_temperature"]
-    x, y = rotate(points[:, 0], points[:, 1], OMEGA * t)
+    points, velocities = sample_background(background, rng, count, ELECTRON_MASS)
+    x, y = rotate(points[0], points[1], OMEGA * t)
     positions = np.stack([x, y, rng.uniform(-LZ, LZ, count)])
-    velocities = rng.normal(size=(3, count)) * np.sqrt(QE * te / ELECTRON_MASS)
     e, b = e_field(background, positions, t), b_field(x, y)
     velocities += np.cross(e.T, b.T).T / np.sum(b * b, axis=0)
     return positions, velocities
@@ -202,160 +200,188 @@ def spoke_angle(x, y, t):
 
 
 def run(preset: str) -> dict:
-    """Push and collide the electrons; return the per-frame data and the period averages."""
-    from mpiparticles import ParticleStore, boris_push
+    """Push and collide the electrons (picnic's Vlasov); return the frames and averages."""
+    import astropy.units as u
+    from picnic.models.vlasov import Vlasov
+    from picnic.parameters import GridParams, VlasovConfig
+    from picnic.parameters.bc_params import ParticleBCs, ParticleBoundaryCondition
+    from picnic.particles.refill_source import RefillSource
+    from picnic.particles.species_collection import Particles
+    from picnic.particles.wall_hits import wall_label
+    from picnic.post_processing.rotating_frame import RotatingFrameMoments
+    from picnic.simulation import Simulation
     from plasmacoll.constants import ELECTRON_MASS
 
     size = PRESETS[preset]
-    rng = np.random.default_rng(0)
     background = build_background()
-    mcc = collisions()
-    store = ParticleStore(ndim=3, nvel=3)
-    store.add(*sample_electrons(background, rng, size["markers"], 0.0))
-
     n_burn = int(size["burn_in"] * PERIOD / DT)
     per_frame = max(1, int(round(size["recorded"] * PERIOD / DT / size["frames"])))
+    t_burn = n_burn * DT
+    steps = n_burn + size["frames"] * per_frame
+
+    # the slab between the cathode sheath (reflects) and the anode plane (absorbs); the
+    # side faces at +-L absorb (the hand-written loop cut at r = 0.95 L)
+    kill, reflect = (
+        ParticleBoundaryCondition("kill"),
+        ParticleBoundaryCondition("reflect"),
+    )
+    config = VlasovConfig(
+        grid=GridParams(
+            ndim=3,
+            nvel=3,
+            num_gridpoints=(5, 5, 5),
+            lower_bound=(-L, -L, -LZ),
+            upper_bound=(L, L, LZ),
+            coordinates="cartesian",
+            domain_decomposition=(False, False, False),
+        ),
+        bcs_particles=ParticleBCs(kill, kill, kill, kill, reflect, kill),
+        dt=DT,
+    )
+    model = Vlasov(
+        config,
+        e_field=lambda positions, t: e_field(background, positions.T, t).T,
+        b_field=lambda positions: b_field(positions[:, 0], positions[:, 1]).T,
+        fields_on_grid=False,
+        collisions=collisions(),
+        collision_interval=COLLIDE_EVERY,
+        record_untracked_products=True,
+    )
+    electrons = Particles(
+        "e",
+        name="e",
+        number_density=0.0 / u.m**3,
+        temperature=0.0 * u.eV,
+        macroparticle_weight=1.0,
+        injection_method="manual",
+        ndim=3,
+        nvel=3,
+    )
+    electrons.set_pusher_args(model.domain.grid)
+    model.particles.add(electrons)
+
+    def sample(rng, count, t):
+        return sample_electrons(background, rng, count, t)
+
+    model.add_particle_source("e", RefillSource(size["markers"], sample, seed=0))
+
+    # the spoke-frame averages: markers and energy every frame, ionizations every step
+    spoke = RotatingFrameMoments("e", OMEGA, (-L, -L), (L, L), NMAP)
     edges = np.linspace(-np.pi, np.pi, N_BINS + 1)
-    sums = {k: np.zeros(N_BINS) for k in ("ion", "anode", "energy", "count")}
-    spoke_ion = map_field()
-    # period averages in the spoke frame: markers, their energy, and the anode flux
-    spoke_maps = {name: map_field() for name in ("density", "energy", "anode")}
-    tracked, tracks = None, []
-    track_steps = int(round(TRACK_WINDOW / DT))
-    frame_ion, anode_count, ion_count = map_field(), 0, 0
-    frames = []
-    t = 0.0
+    sums = {k: np.zeros(N_BINS) for k in ("ion", "energy", "count")}
+    rng = np.random.default_rng(0)
+    frames, tracks = [], []
+    state = {"frame_ion": map_field(), "ions": 0, "tracked": None, "hits": 0}
+
+    def ionizations(sim):
+        births = sim.model.take_untracked_products().get("Ar+")
+        if births is None or sim.model.time <= t_burn:
+            return
+        where = births.positions
+        state["frame_ion"].deposit_density(where[:, :2].T, np.ones(len(where)))
+        spoke.add_events("ionization", where, births.times)
+        xs, ys = rotate(where[:, 0], where[:, 1], -OMEGA * births.times)
+        sums["ion"] += np.histogram(np.arctan2(ys, xs), edges)[0]
+        state["ions"] += len(where)
+
+    def follow(sim):
+        t = sim.model.time
+        if not (t_burn <= t < t_burn + TRACK_WINDOW):
+            return
+        markers = electrons.markers
+        n = markers.current_length
+        ids, alive = markers.marker_ids[:n], markers.alive[:n]
+        p = markers.positions[:, :n]
+        if state["tracked"] is None:
+            near = np.flatnonzero(
+                alive & (np.abs(np.hypot(p[0], p[1]) - R0) < 0.5 * WR)
+            )
+            state["tracked"] = ids[rng.choice(near, size=N_TRACKS, replace=False)]
+            state["track_start"] = t
+        sample_ = np.full((N_TRACKS, 3), np.nan)
+        for k, marker in enumerate(state["tracked"]):
+            where = np.flatnonzero((ids == marker) & alive)
+            if where.size:
+                sample_[k] = p[:, where[0]]
+        tracks.append(sample_)
+
+    def frame(sim):
+        t = sim.model.time
+        done = sim.model.iteration - n_burn
+        if done <= 0 or done % per_frame:
+            return
+        spoke(sim)
+        markers = electrons.markers
+        n = markers.current_length
+        alive = markers.alive[:n]
+        p, v = markers.positions[:, :n][:, alive], markers.velocities[:, :n][:, alive]
+        energy = 0.5 * ELECTRON_MASS * np.sum(v * v, axis=0) / QE
+        bins = np.clip(
+            np.digitize(spoke_angle(p[0], p[1], t), edges) - 1, 0, N_BINS - 1
+        )
+        near = np.abs(np.hypot(p[0], p[1]) - R0) < WR
+        sums["energy"] += np.bincount(bins[near], energy[near], N_BINS)
+        sums["count"] += np.bincount(bins[near], minlength=N_BINS)
+        anode_hits = model.wall_hits.get("e")
+        total = (
+            0
+            if anode_hits is None
+            else int(np.sum((anode_hits.wall == anode) & (anode_hits.time > t_burn)))
+        )
+        show = rng.choice(p.shape[1], size=min(N_SHOW, p.shape[1]), replace=False)
+        frames.append(
+            {
+                "t": t,
+                "x": p[0, show].astype(np.float32),
+                "y": p[1, show].astype(np.float32),
+                "energy": energy[show].astype(np.float32),
+                "ion": state["frame_ion"].to_numpy()[..., 0].astype(np.float32),
+                "ions": state["ions"],
+                "anode": total - state["hits"],
+            }
+        )
+        state["frame_ion"], state["ions"], state["hits"] = map_field(), 0, total
+        print(
+            f"frame {len(frames)}/{size['frames']}  t = {t * 1e6:.2f} us  "
+            f"<E> = {energy.mean():.1f} eV  {time.time() - start:.0f} s"
+        )
+
+    anode = wall_label(2, "max")
+    sim = Simulation(model, t_end=steps * DT)
+    sim.add_callback(ionizations, every=1)
+    sim.add_callback(follow, every=TRACK_EVERY)
+    sim.add_callback(frame, every=1)
     start = time.time()
-    for step in range(n_burn + size["frames"] * per_frame):
-        recording = step >= n_burn
-        n = store.length
-        p, v, alive = store.positions[:, :n], store.velocities[:, :n], store.alive[:n]
-        e = e_field(background, p, t + 0.5 * DT)
-        boris_push(store, e, b_field(p[0], p[1]), DT, -QE / ELECTRON_MASS)
-        t += DT
+    sim.run()
 
-        # the cathode sheath reflects; the anode plane and the domain edge absorb
-        low = p[2] < -LZ
-        p[2, low] = -2 * LZ - p[2, low]
-        v[2, low] *= -1
-        anode = (p[2] > LZ) & alive
-        lost = (np.hypot(p[0], p[1]) > 0.95 * L) & alive
-        if recording and anode.any():
-            angles = spoke_angle(p[0, anode], p[1, anode], t)
-            sums["anode"] += np.histogram(angles, edges)[0]
-            anode_count += int(anode.sum())
-            xs, ys = rotate(p[0, anode], p[1, anode], -OMEGA * t)
-            spoke_maps["anode"].deposit_density(
-                np.stack([xs, ys]), np.ones(int(anode.sum()))
-            )
-
-        if step % COLLIDE_EVERY == 0:
-            index = np.flatnonzero(alive & ~anode & ~lost)
-            velocities = np.ascontiguousarray(v[:, index].T)
-            result = mcc.collide(
-                "e",
-                np.ascontiguousarray(p[:2, index].T),
-                velocities,
-                np.ones(index.size),
-                COLLIDE_EVERY * DT,
-                in_place=True,
-            )
-            v[:, index] = velocities.T
-            ions = result.created.get("Ar+", [])
-            if ions and recording:
-                where = np.concatenate([np.asarray(m.positions) for m in ions])
-                frame_ion.deposit_density(where.T, np.ones(len(where)))
-                xs, ys = rotate(where[:, 0], where[:, 1], -OMEGA * t)
-                spoke_ion.deposit_density(np.stack([xs, ys]), np.ones(len(where)))
-                sums["ion"] += np.histogram(np.arctan2(ys, xs), edges)[0]
-                ion_count += len(where)
-            for batch in result.created.get("e", []):
-                xy = np.asarray(batch.positions)
-                z = rng.uniform(-LZ, LZ, len(xy))
-                store.add(
-                    np.stack([xy[:, 0], xy[:, 1], z]), np.asarray(batch.velocities).T
-                )
-
-        dead = anode | lost
-        if dead.any():
-            store.deactivate(np.concatenate([dead, np.zeros(store.length - n, bool)]))
-        store.compact_if_needed()
-        missing = size["markers"] - store.num_alive
-        if missing > 0:
-            store.add(*sample_electrons(background, rng, missing, t))
-
-        if (
-            recording
-            and step - n_burn < track_steps
-            and (step - n_burn) % TRACK_EVERY == 0
-        ):
-            n = store.length
-            ids, alive = store.ids[:n], store.alive[:n]
-            if tracked is None:
-                # electrons on the racetrack when the recording starts
-                near = np.flatnonzero(
-                    alive & (np.abs(np.hypot(*store.positions[:2, :n]) - R0) < 0.5 * WR)
-                )
-                tracked = ids[rng.choice(near, size=N_TRACKS, replace=False)]
-                track_start = t
-            sample = np.full((N_TRACKS, 3), np.nan)
-            for k, marker in enumerate(tracked):
-                where = np.flatnonzero((ids == marker) & alive)
-                if where.size:
-                    sample[k] = store.positions[:, where[0]]
-            tracks.append(sample)
-
-        if recording and (step - n_burn + 1) % per_frame == 0:
-            store.compact()
-            n = store.length
-            p, v = store.positions[:, :n], store.velocities[:, :n]
-            energy = 0.5 * ELECTRON_MASS * np.sum(v * v, axis=0) / QE
-            bins = np.clip(
-                np.digitize(spoke_angle(p[0], p[1], t), edges) - 1, 0, N_BINS - 1
-            )
-            near = np.abs(np.hypot(p[0], p[1]) - R0) < WR
-            sums["energy"] += np.bincount(bins[near], energy[near], N_BINS)
-            sums["count"] += np.bincount(bins[near], minlength=N_BINS)
-            xs, ys = rotate(p[0], p[1], -OMEGA * t)
-            spoke_maps["density"].deposit_density(np.stack([xs, ys]), np.ones(n))
-            spoke_maps["energy"].deposit_density(np.stack([xs, ys]), energy)
-            show = rng.choice(n, size=min(N_SHOW, n), replace=False)
-            frames.append(
-                {
-                    "t": t,
-                    "x": p[0, show].astype(np.float32),
-                    "y": p[1, show].astype(np.float32),
-                    "energy": energy[show].astype(np.float32),
-                    "ion": frame_ion.to_numpy()[..., 0].astype(np.float32),
-                    "ions": ion_count,
-                    "anode": anode_count,
-                }
-            )
-            frame_ion, anode_count, ion_count = map_field(), 0, 0
-            print(
-                f"frame {len(frames)}/{size['frames']}  t = {t * 1e6:.2f} us  "
-                f"<E> = {energy.mean():.1f} eV  {time.time() - start:.0f} s"
-            )
-
-    sample = background.sample(resolution=NMAP)
+    # the anode flux of the recorded part, from the wall hits
+    hits = model.wall_hits["e"]
+    on = (hits.wall == anode) & (hits.time > t_burn)
+    angles = spoke_angle(hits.position[on, 0], hits.position[on, 1], hits.time[on])
+    spoke.add_events("anode", hits.position[on], hits.time[on])
+    frame_ds = spoke.dataset()
+    sample_ = background.sample(resolution=NMAP)
     return {
         "preset": preset,
         "frames": frames,
         "frame_time": per_frame * DT,
         "angles": 0.5 * (edges[1:] + edges[:-1]),
         "ion_profile": sums["ion"],
-        "anode_profile": sums["anode"],
+        "anode_profile": np.histogram(angles, edges)[0].astype(float),
         "energy_profile": sums["energy"] / np.maximum(sums["count"], 1),
-        "spoke_ion": spoke_ion.to_numpy()[..., 0].astype(np.float32),
+        "spoke_ion": frame_ds["ionization"].values.astype(np.float32),
         "spoke_maps": {
-            name: field.to_numpy()[..., 0] for name, field in spoke_maps.items()
+            "density": frame_ds["density"].values * frame_ds.attrs["samples"],
+            "energy": frame_ds["mean_energy"].fillna(0).values
+            * frame_ds["density"].values
+            * frame_ds.attrs["samples"],
+            "anode": frame_ds["anode"].values,
         },
-        # (electron, sample, x y z), from track_start every track_dt
         "tracks": np.array(tracks, dtype=np.float32).transpose(1, 0, 2),
-        "track_start": track_start,
+        "track_start": state.get("track_start", t_burn),
         "track_dt": TRACK_EVERY * DT,
-        "axis": sample["x"].values,
-        "potential": sample["potential"].values.astype(np.float32),
+        "axis": sample_["x"].values,
+        "potential": sample_["potential"].values.astype(np.float32),
         "wall_time": time.time() - start,
     }
 
