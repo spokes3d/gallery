@@ -6,6 +6,7 @@ Site: <https://spokes3d.github.io/gallery/>
 
 | Study | Kind | Codes |
 |---|---|---|
+| [Charoy ExB benchmark](https://spokes3d.github.io/gallery/studies/charoy-exb-benchmark/) | verification | picnic |
 | [Hall current field](https://spokes3d.github.io/gallery/studies/hall-current-field/) | example | none |
 | [Rotating-spoke test electrons](https://spokes3d.github.io/gallery/studies/rotating-spoke-test-electrons/) | example | byob, mpifield, picnic, plasmacoll |
 | [Rotating-spoke test ions](https://spokes3d.github.io/gallery/studies/rotating-spoke-test-ions/) | example | byob, mpifield, picnic, plasmacoll |

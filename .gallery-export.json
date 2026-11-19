@@ -1,7 +1,8 @@
 {
   "source": "spokes3d/gallery-private",
-  "commit": "753ee08924cec717e36a2c77bc1d1914e49c7653",
+  "commit": "cbd0cda6471742153c6fdeb3099b9974571e7dde",
   "studies": [
+    "02_charoy_exb_benchmark",
     "05_hall_current_field",
     "11_rotating_spoke_test_electrons",
     "13_rotating_spoke_test_ions",
