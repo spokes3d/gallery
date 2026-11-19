@@ -1,0 +1,27 @@
+# Read by gallery-tools without running the script (see the Adding a study guide).
+category: Verification
+kind: verification
+public: true
+codes:
+- picnic
+ladder: '2'
+questions: []
+summary: >-
+  The 2D axial-azimuthal ExB benchmark of Charoy et al. (2019) in picnic, as a reduced run that checks
+  the set-up; the published case is a cluster job.
+docs_preset: quick
+runtime: about 8 minutes (quick); the published case is a cluster run
+status: >-
+  Not yet a verification. The set-up works (198 V drop, zero mean potential at the emission plane,
+  quasi-neutral, the density peak sits in front of the field maximum, as in the paper), but the runs
+  shown are far shorter than the published steady state, break the stability limits and have too few
+  markers per cell. The 150-marker 20 microsecond case and a point-by-point comparison with the supplementary
+  profiles are not done.
+figures:
+- >-
+  Azimuthally and time averaged axial profiles of the axial electric field, the ion density and the
+  electron temperature (dashed: the field maximum; dotted: the published peak values).
+- >-
+  Spectrum of the azimuthal field at the two probe positions (dashed: the published frequency of each
+  zone).
+- Emitted electron current over the ion current J_M against time.

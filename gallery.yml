@@ -6,9 +6,7 @@ site:
   owner: spokes3d
   repo: gallery
 codes:
-- beamtracer
 - byob
-- freeofcharge
 - picnic
 - wellbalanced
 - plasmacoll
@@ -17,7 +15,6 @@ codes:
 - mpifield
 - mpiparticles
 - simgeometry
-- slowcooker
 private_codes:
 - picnic
 fields:
